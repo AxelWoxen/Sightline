@@ -14,7 +14,9 @@ import {
   ChevronDown,
   ChevronUp,
   ImageIcon,
-  Loader2
+  Loader2,
+  Zap,
+  Settings2
 } from "lucide-react"
 
 type CritiqueCategory = {
@@ -24,6 +26,7 @@ type CritiqueCategory = {
   score: number
   feedback: string
   suggestions: string[]
+  color: string
 }
 
 const mockCritique: CritiqueCategory[] = [
@@ -32,6 +35,7 @@ const mockCritique: CritiqueCategory[] = [
     title: "Composition",
     icon: Camera,
     score: 78,
+    color: "blue",
     feedback: "Strong use of leading lines drawing the eye toward the subject. The placement slightly off-center creates natural tension. Consider exploring negative space more intentionally in future shots.",
     suggestions: [
       "Try positioning the subject at the intersection of thirds",
@@ -44,6 +48,7 @@ const mockCritique: CritiqueCategory[] = [
     title: "Lighting",
     icon: Sun,
     score: 85,
+    color: "amber",
     feedback: "Beautiful soft light quality with pleasing shadows. The golden hour timing works exceptionally well here. The subtle rim lighting adds dimension to the subject.",
     suggestions: [
       "Consider fill light for shadow detail",
@@ -56,6 +61,7 @@ const mockCritique: CritiqueCategory[] = [
     title: "Editing & Color",
     icon: Palette,
     score: 72,
+    color: "purple",
     feedback: "Clean editing with a cohesive color palette. The warmth suits the mood. Shadows could use slightly more detail, and highlights are close to clipping in some areas.",
     suggestions: [
       "Pull back highlights by 10-15%",
@@ -68,6 +74,7 @@ const mockCritique: CritiqueCategory[] = [
     title: "Storytelling",
     icon: MessageSquare,
     score: 68,
+    color: "teal",
     feedback: "The image evokes a contemplative mood but could benefit from more context. The viewer is left wondering about the narrative. Consider what story you want to tell.",
     suggestions: [
       "Include environmental context",
@@ -80,6 +87,7 @@ const mockCritique: CritiqueCategory[] = [
     title: "Emotional Impact",
     icon: Heart,
     score: 81,
+    color: "rose",
     feedback: "There is genuine feeling in this image. The viewer can sense the atmosphere. The subtle expression and body language communicate effectively.",
     suggestions: [
       "Wait for peak emotional moments",
@@ -87,7 +95,29 @@ const mockCritique: CritiqueCategory[] = [
       "Trust your instincts on timing"
     ]
   },
+  {
+    id: "technical",
+    title: "Technical Settings",
+    icon: Settings2,
+    score: 75,
+    color: "slate",
+    feedback: "Good exposure and focus. Depth of field choice supports the subject isolation. Consider experimenting with longer exposures or different apertures for creative effects.",
+    suggestions: [
+      "Try f/2.8 for more subject isolation",
+      "Experiment with motion blur at 1/30s",
+      "Consider focus stacking for landscapes"
+    ]
+  },
 ]
+
+const colorClasses: Record<string, { bg: string; text: string; border: string }> = {
+  blue: { bg: "bg-blue-500/20", text: "text-blue-400", border: "border-blue-500/30" },
+  amber: { bg: "bg-amber-500/20", text: "text-amber-400", border: "border-amber-500/30" },
+  purple: { bg: "bg-purple-500/20", text: "text-purple-400", border: "border-purple-500/30" },
+  teal: { bg: "bg-teal-500/20", text: "text-teal-400", border: "border-teal-500/30" },
+  rose: { bg: "bg-rose-500/20", text: "text-rose-400", border: "border-rose-500/30" },
+  slate: { bg: "bg-slate-500/20", text: "text-slate-400", border: "border-slate-500/30" },
+}
 
 export default function CritiquePage() {
   const [image, setImage] = useState<string | null>(null)
@@ -125,7 +155,6 @@ export default function CritiquePage() {
 
   const analyzPhoto = () => {
     setIsAnalyzing(true)
-    // Simulate AI analysis
     setTimeout(() => {
       setIsAnalyzing(false)
       setCritique(mockCritique)
@@ -143,14 +172,14 @@ export default function CritiquePage() {
     : 0
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="px-6 lg:px-8 py-4">
+        <div className="px-6 lg:px-8 py-5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-medium">AI Critique</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <h1 className="text-2xl font-semibold tracking-tight">AI Critique</h1>
+              <p className="text-sm text-muted-foreground mt-1">
                 Get detailed feedback on your photographs
               </p>
             </div>
@@ -158,7 +187,7 @@ export default function CritiquePage() {
             {image && (
               <button
                 onClick={resetUpload}
-                className="flex items-center gap-2 px-4 py-2 glass-subtle rounded-full text-sm font-medium hover:bg-white/5 transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 glass-subtle rounded-full text-sm font-medium hover:bg-secondary transition-colors"
               >
                 <Upload className="w-4 h-4" />
                 New Upload
@@ -184,10 +213,10 @@ export default function CritiquePage() {
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
                   onDragLeave={() => setIsDragging(false)}
                   onDrop={handleDrop}
-                  className={`relative border-2 border-dashed rounded-3xl p-12 text-center transition-all duration-300 ${
+                  className={`relative border-2 border-dashed rounded-3xl p-16 text-center transition-all duration-300 ${
                     isDragging 
-                      ? "border-foreground bg-foreground/5" 
-                      : "border-border hover:border-muted-foreground/50"
+                      ? "border-accent bg-accent/5 scale-[1.02]" 
+                      : "border-border hover:border-muted-foreground/50 hover:bg-secondary/30"
                   }`}
                 >
                   <input
@@ -197,11 +226,14 @@ export default function CritiquePage() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   
-                  <div className="w-16 h-16 mx-auto rounded-full glass-card flex items-center justify-center mb-6">
-                    <ImageIcon className="w-7 h-7 text-muted-foreground" />
-                  </div>
+                  <motion.div 
+                    animate={{ scale: isDragging ? 1.1 : 1 }}
+                    className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center mb-6"
+                  >
+                    <ImageIcon className="w-9 h-9 text-accent" />
+                  </motion.div>
                   
-                  <h2 className="text-2xl font-medium">
+                  <h2 className="text-2xl font-semibold">
                     Drop your photo here
                   </h2>
                   <p className="mt-2 text-muted-foreground">
@@ -209,27 +241,35 @@ export default function CritiquePage() {
                   </p>
                   
                   <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted-foreground">
-                    <span>JPG, PNG, HEIC</span>
-                    <span className="w-1 h-1 rounded-full bg-muted-foreground" />
-                    <span>Max 20MB</span>
+                    <span className="px-3 py-1 rounded-full bg-secondary">JPG</span>
+                    <span className="px-3 py-1 rounded-full bg-secondary">PNG</span>
+                    <span className="px-3 py-1 rounded-full bg-secondary">HEIC</span>
+                    <span className="text-xs">Max 20MB</span>
                   </div>
                 </div>
 
                 {/* Recent critiques */}
                 <div className="mt-12">
                   <h3 className="text-sm font-medium text-muted-foreground mb-4">Recent Critiques</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[1, 2, 3].map((i) => (
-                      <button
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop",
+                      "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=200&h=200&fit=crop",
+                      "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop"
+                    ].map((img, i) => (
+                      <motion.button
                         key={i}
-                        className="aspect-square rounded-xl overflow-hidden glass-subtle hover:ring-1 hover:ring-foreground/20 transition-all"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="aspect-square rounded-xl overflow-hidden ring-1 ring-border hover:ring-2 hover:ring-accent/50 transition-all group"
                       >
                         <img
-                          src={`https://images.unsplash.com/photo-${1500000000000 + i * 100000}?w=200&h=200&fit=crop`}
+                          src={img}
                           alt=""
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
@@ -244,8 +284,8 @@ export default function CritiquePage() {
                 className="grid lg:grid-cols-2 gap-8"
               >
                 {/* Image Preview */}
-                <div className="space-y-4">
-                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden glass-card">
+                <div className="space-y-6">
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden glass-card ring-1 ring-border">
                     <img
                       src={image}
                       alt="Uploaded photo"
@@ -253,24 +293,41 @@ export default function CritiquePage() {
                     />
                     
                     {isAnalyzing && (
-                      <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center"
+                      >
                         <div className="text-center">
-                          <div className="w-12 h-12 mx-auto rounded-full glass-card flex items-center justify-center mb-4">
-                            <Loader2 className="w-6 h-6 animate-spin" />
+                          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center mb-4">
+                            <Loader2 className="w-7 h-7 animate-spin text-accent" />
                           </div>
-                          <p className="font-medium">Analyzing your image...</p>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            This usually takes a few seconds
+                          <p className="font-semibold text-lg">Analyzing your image...</p>
+                          <p className="text-sm text-muted-foreground mt-2">
+                            AI is examining composition, light, and emotion
                           </p>
+                          <div className="mt-4 flex items-center justify-center gap-2">
+                            {["Composition", "Light", "Color", "Story"].map((item, i) => (
+                              <motion.span
+                                key={item}
+                                initial={{ opacity: 0.3 }}
+                                animate={{ opacity: [0.3, 1, 0.3] }}
+                                transition={{ delay: i * 0.5, duration: 2, repeat: Infinity }}
+                                className="text-xs px-2 py-1 rounded-full bg-secondary"
+                              >
+                                {item}
+                              </motion.span>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      </motion.div>
                     )}
 
                     <button
                       onClick={resetUpload}
-                      className="absolute top-4 right-4 w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors"
+                      className="absolute top-4 right-4 w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-secondary transition-colors"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
 
@@ -279,129 +336,140 @@ export default function CritiquePage() {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="glass-card rounded-2xl p-6"
+                      className="glass-card rounded-2xl p-6 relative overflow-hidden"
                     >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-muted-foreground">Overall Score</p>
-                          <p className="text-4xl font-medium gradient-text mt-1">{overallScore}</p>
-                        </div>
-                        
-                        <div className="w-20 h-20 relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent" />
+                      <div className="relative flex items-center gap-6">
+                        <div className="w-24 h-24 relative">
                           <svg className="w-full h-full -rotate-90">
                             <circle
-                              cx="40"
-                              cy="40"
-                              r="36"
+                              cx="48"
+                              cy="48"
+                              r="42"
                               fill="none"
                               stroke="currentColor"
-                              strokeWidth="4"
+                              strokeWidth="6"
                               className="text-secondary"
                             />
-                            <circle
-                              cx="40"
-                              cy="40"
-                              r="36"
+                            <motion.circle
+                              cx="48"
+                              cy="48"
+                              r="42"
                               fill="none"
                               stroke="currentColor"
-                              strokeWidth="4"
-                              strokeDasharray={`${(overallScore / 100) * 226} 226`}
+                              strokeWidth="6"
                               strokeLinecap="round"
-                              className="text-foreground"
+                              className="text-accent"
+                              initial={{ strokeDasharray: "0 264" }}
+                              animate={{ strokeDasharray: `${(overallScore / 100) * 264} 264` }}
+                              transition={{ delay: 0.5, duration: 1 }}
                             />
                           </svg>
-                          <Sparkles className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-2xl font-bold">{overallScore}</span>
+                          </div>
                         </div>
+                        
+                        <div className="flex-1">
+                          <p className="text-sm text-muted-foreground">Overall Score</p>
+                          <p className="font-semibold text-lg mt-1">Strong photograph with excellent lighting</p>
+                          <p className="text-sm text-muted-foreground mt-2">
+                            Focus on storytelling to take your work to the next level.
+                          </p>
+                        </div>
+
+                        <Sparkles className="w-8 h-8 text-accent/50" />
                       </div>
-                      
-                      <p className="mt-4 text-sm text-muted-foreground">
-                        This is a strong photograph with excellent lighting. Focus on storytelling 
-                        to take your work to the next level.
-                      </p>
                     </motion.div>
                   )}
                 </div>
 
                 {/* Critique Categories */}
                 {critique && (
-                  <div className="space-y-3">
-                    <h2 className="font-medium mb-4">Detailed Feedback</h2>
+                  <div className="space-y-4">
+                    <h2 className="font-semibold text-lg mb-6">Detailed Feedback</h2>
                     
-                    {critique.map((category, index) => (
-                      <motion.div
-                        key={category.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="glass-card rounded-xl overflow-hidden"
-                      >
-                        <button
-                          onClick={() => setExpandedCategory(
-                            expandedCategory === category.id ? null : category.id
-                          )}
-                          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+                    {critique.map((category, index) => {
+                      const colors = colorClasses[category.color]
+                      return (
+                        <motion.div
+                          key={category.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.08 }}
+                          className={`glass-card rounded-xl overflow-hidden border ${expandedCategory === category.id ? colors.border : "border-transparent"}`}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl glass-subtle flex items-center justify-center">
-                              <category.icon className="w-5 h-5" />
-                            </div>
-                            <div className="text-left">
-                              <h3 className="font-medium text-sm">{category.title}</h3>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <div className="w-16 h-1 bg-secondary rounded-full overflow-hidden">
-                                  <div 
-                                    className="h-full bg-foreground rounded-full"
-                                    style={{ width: `${category.score}%` }}
-                                  />
+                          <button
+                            onClick={() => setExpandedCategory(
+                              expandedCategory === category.id ? null : category.id
+                            )}
+                            className="w-full flex items-center justify-between p-4 hover:bg-secondary/30 transition-colors"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={`w-11 h-11 rounded-xl ${colors.bg} flex items-center justify-center`}>
+                                <category.icon className={`w-5 h-5 ${colors.text}`} />
+                              </div>
+                              <div className="text-left">
+                                <h3 className="font-medium">{category.title}</h3>
+                                <div className="flex items-center gap-3 mt-1">
+                                  <div className="w-20 h-1.5 bg-secondary rounded-full overflow-hidden">
+                                    <motion.div 
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${category.score}%` }}
+                                      transition={{ delay: index * 0.1 + 0.3 }}
+                                      className={`h-full rounded-full ${colors.bg.replace('/20', '')}`}
+                                      style={{ backgroundColor: `var(--${category.color}-500)` }}
+                                    />
+                                  </div>
+                                  <span className={`text-sm font-medium ${colors.text}`}>{category.score}</span>
                                 </div>
-                                <span className="text-xs text-muted-foreground">{category.score}</span>
                               </div>
                             </div>
-                          </div>
+                            
+                            {expandedCategory === category.id ? (
+                              <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                            ) : (
+                              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                            )}
+                          </button>
                           
-                          {expandedCategory === category.id ? (
-                            <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                          )}
-                        </button>
-                        
-                        <AnimatePresence>
-                          {expandedCategory === category.id && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="p-4 pt-0 border-t border-border/50">
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                  {category.feedback}
-                                </p>
-                                
-                                <div className="mt-4">
-                                  <p className="text-xs font-medium text-muted-foreground mb-2">
-                                    Suggestions
+                          <AnimatePresence>
+                            {expandedCategory === category.id && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="p-5 pt-0 border-t border-border/50">
+                                  <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {category.feedback}
                                   </p>
-                                  <ul className="space-y-2">
-                                    {category.suggestions.map((suggestion, i) => (
-                                      <li 
-                                        key={i}
-                                        className="flex items-start gap-2 text-sm"
-                                      >
-                                        <span className="text-foreground/60 mt-1">-</span>
-                                        {suggestion}
-                                      </li>
-                                    ))}
-                                  </ul>
+                                  
+                                  <div className="mt-5">
+                                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                      Suggestions to improve
+                                    </p>
+                                    <ul className="space-y-2">
+                                      {category.suggestions.map((suggestion, i) => (
+                                        <li 
+                                          key={i}
+                                          className="flex items-start gap-3 text-sm p-3 rounded-lg bg-secondary/30"
+                                        >
+                                          <Zap className={`w-4 h-4 shrink-0 mt-0.5 ${colors.text}`} />
+                                          {suggestion}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
                                 </div>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      )
+                    })}
                   </div>
                 )}
               </motion.div>

@@ -11,7 +11,14 @@ import {
   RotateCcw,
   Lightbulb,
   Target,
-  Shuffle
+  Shuffle,
+  Sparkles,
+  Zap,
+  Camera,
+  Sun,
+  Layers,
+  Frame,
+  Grid3X3
 } from "lucide-react"
 
 const todayExercise = {
@@ -34,23 +41,38 @@ const exerciseTypes = [
   {
     id: "composition",
     name: "Composition",
-    icon: Target,
+    description: "Frame, balance, and visual flow",
+    icon: Frame,
     exercises: 12,
-    completed: 8
+    completed: 8,
+    color: "blue"
   },
   {
     id: "light",
     name: "Light Reading",
-    icon: Eye,
+    description: "Understand quality and direction",
+    icon: Sun,
     exercises: 10,
-    completed: 5
+    completed: 5,
+    color: "amber"
   },
   {
     id: "story",
     name: "Storytelling",
-    icon: Lightbulb,
+    description: "Capture the decisive moment",
+    icon: Camera,
     exercises: 8,
-    completed: 3
+    completed: 3,
+    color: "purple"
+  },
+  {
+    id: "layers",
+    name: "Visual Layers",
+    description: "Create depth and dimension",
+    icon: Layers,
+    exercises: 6,
+    completed: 2,
+    color: "teal"
   },
 ]
 
@@ -61,7 +83,8 @@ const pastExercises = [
     type: "Light Reading",
     completed: true,
     score: 85,
-    date: "Yesterday"
+    date: "Yesterday",
+    color: "amber"
   },
   {
     id: 2,
@@ -69,7 +92,8 @@ const pastExercises = [
     type: "Storytelling",
     completed: true,
     score: 72,
-    date: "2 days ago"
+    date: "2 days ago",
+    color: "purple"
   },
   {
     id: 3,
@@ -77,9 +101,23 @@ const pastExercises = [
     type: "Composition",
     completed: true,
     score: 90,
-    date: "3 days ago"
+    date: "3 days ago",
+    color: "blue"
   },
 ]
+
+const dailyDrills = [
+  { id: 1, title: "Identify the light source", completed: true },
+  { id: 2, title: "Find 3 leading lines around you", completed: true },
+  { id: 3, title: "Spot natural frames in your environment", completed: false },
+]
+
+const colorClasses: Record<string, { bg: string; text: string; border: string }> = {
+  blue: { bg: "bg-blue-500/20", text: "text-blue-400", border: "border-blue-500/30" },
+  amber: { bg: "bg-amber-500/20", text: "text-amber-400", border: "border-amber-500/30" },
+  purple: { bg: "bg-purple-500/20", text: "text-purple-400", border: "border-purple-500/30" },
+  teal: { bg: "bg-teal-500/20", text: "text-teal-400", border: "border-teal-500/30" },
+}
 
 export default function LearnPage() {
   const [showMasterCrop, setShowMasterCrop] = useState(false)
@@ -107,22 +145,22 @@ export default function LearnPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="px-6 lg:px-8 py-4">
+        <div className="px-6 lg:px-8 py-5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-medium">Learn to See</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <h1 className="text-2xl font-semibold tracking-tight">Learn to See</h1>
+              <p className="text-sm text-muted-foreground mt-1">
                 Daily exercises to train your photographic eye
               </p>
             </div>
             
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-subtle">
-                <Eye className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm">16 exercises done</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full glass-subtle">
+                <Zap className="w-4 h-4 text-amber-400" />
+                <span className="text-sm font-medium">16 exercises done</span>
               </div>
             </div>
           </div>
@@ -131,37 +169,83 @@ export default function LearnPage() {
 
       <div className="px-6 lg:px-8 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
+          {/* Daily Drills Quick View */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card rounded-2xl p-6"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Today&apos;s Quick Drills</h3>
+                  <p className="text-sm text-muted-foreground">Train your eye in the real world</p>
+                </div>
+              </div>
+              <span className="text-sm text-muted-foreground">
+                {dailyDrills.filter(d => d.completed).length}/{dailyDrills.length} done
+              </span>
+            </div>
+            
+            <div className="flex flex-wrap gap-3">
+              {dailyDrills.map((drill, i) => (
+                <motion.button
+                  key={drill.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.05 }}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                    drill.completed 
+                      ? "bg-green-500/20 border border-green-500/30 text-green-400" 
+                      : "glass-subtle hover:bg-secondary"
+                  }`}
+                >
+                  {drill.completed ? (
+                    <CheckCircle2 className="w-4 h-4" />
+                  ) : (
+                    <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/40" />
+                  )}
+                  <span className="text-sm font-medium">{drill.title}</span>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+
           {/* Today's Exercise */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
             className="glass-card rounded-3xl overflow-hidden"
           >
             <div className="p-6 sm:p-8 border-b border-border/50">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded-full bg-foreground text-background text-xs font-medium">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="px-4 py-1.5 rounded-full bg-accent text-background text-xs font-semibold uppercase tracking-wider">
                     Today&apos;s Exercise
                   </span>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Clock className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full glass-subtle text-sm">
+                    <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                     {todayExercise.duration}
                   </div>
                 </div>
                 
                 <button
                   onClick={resetExercise}
-                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
+                  <RotateCcw className="w-4 h-4" />
                   Reset
                 </button>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-medium">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 {todayExercise.title}
               </h2>
-              <p className="text-muted-foreground mt-1">{todayExercise.subtitle}</p>
+              <p className="text-muted-foreground mt-2 text-lg">{todayExercise.subtitle}</p>
               
               <p className="mt-4 text-muted-foreground leading-relaxed max-w-2xl">
                 {todayExercise.description}
@@ -171,7 +255,7 @@ export default function LearnPage() {
             {/* Interactive Image */}
             <div className="p-6 sm:p-8">
               <div 
-                className="relative aspect-[16/10] rounded-2xl overflow-hidden cursor-crosshair"
+                className="relative aspect-[16/10] rounded-2xl overflow-hidden cursor-crosshair ring-1 ring-border"
                 onClick={handleImageClick}
               >
                 <img
@@ -180,14 +264,26 @@ export default function LearnPage() {
                   className="w-full h-full object-cover"
                 />
                 
+                {/* Grid overlay */}
+                {!showMasterCrop && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20" />
+                    <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/20" />
+                    <div className="absolute top-1/3 left-0 right-0 h-px bg-white/20" />
+                    <div className="absolute top-2/3 left-0 right-0 h-px bg-white/20" />
+                  </div>
+                )}
+                
                 {/* User click indicator */}
                 {userCrop && !showMasterCrop && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute w-4 h-4 -ml-2 -mt-2 rounded-full bg-foreground"
+                    className="absolute w-6 h-6 -ml-3 -mt-3 rounded-full bg-accent border-2 border-background shadow-lg"
                     style={{ left: `${userCrop.x}%`, top: `${userCrop.y}%` }}
-                  />
+                  >
+                    <div className="absolute inset-0 rounded-full bg-accent animate-ping opacity-50" />
+                  </motion.div>
                 )}
 
                 {/* Master crop overlay */}
@@ -198,7 +294,7 @@ export default function LearnPage() {
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="absolute inset-0 bg-black/60"
+                        className="absolute inset-0 bg-black/70"
                       />
                       
                       {/* Highlighted crop area */}
@@ -206,7 +302,7 @@ export default function LearnPage() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="absolute border-2 border-foreground rounded-lg"
+                        className="absolute border-4 border-accent rounded-xl shadow-2xl shadow-accent/30"
                         style={{
                           left: `${todayExercise.masterCrop.x}%`,
                           top: `${todayExercise.masterCrop.y}%`,
@@ -214,10 +310,18 @@ export default function LearnPage() {
                           height: `${todayExercise.masterCrop.height}%`,
                         }}
                       >
-                        <div className="absolute inset-0 bg-black/0" />
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full glass text-xs font-medium whitespace-nowrap">
-                          Master&apos;s Crop
-                        </div>
+                        <div className="absolute inset-0 bg-transparent" />
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.4 }}
+                          className="absolute -top-10 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full glass text-sm font-semibold whitespace-nowrap"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-accent" />
+                            Master&apos;s Crop
+                          </span>
+                        </motion.div>
                       </motion.div>
                     </>
                   )}
@@ -229,7 +333,7 @@ export default function LearnPage() {
                 <div className="mt-6 flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
                     {userCrop 
-                      ? "Good! Now reveal the master&apos;s choice" 
+                      ? "Good choice! Now reveal the master&apos;s perspective" 
                       : "Click on the image to mark your frame center"
                     }
                   </p>
@@ -237,7 +341,7 @@ export default function LearnPage() {
                   <button
                     onClick={revealMaster}
                     disabled={!userCrop}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-foreground text-background rounded-full font-medium text-sm hover:bg-foreground/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-6 py-3 bg-foreground text-background rounded-full font-semibold text-sm hover:bg-foreground/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-foreground/10"
                   >
                     <Eye className="w-4 h-4" />
                     Reveal Master
@@ -251,32 +355,40 @@ export default function LearnPage() {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="mt-6 p-6 rounded-2xl glass-subtle"
+                    className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-accent/10 to-transparent border border-accent/20"
                   >
-                    <div className="flex items-start gap-3 mb-4">
-                      <Lightbulb className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-4 mb-5">
+                      <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center shrink-0">
+                        <Lightbulb className="w-6 h-6 text-accent" />
+                      </div>
                       <div>
-                        <h3 className="font-medium">Master&apos;s Insight</h3>
-                        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                        <h3 className="font-semibold text-lg">Master&apos;s Insight</h3>
+                        <p className="mt-2 text-muted-foreground leading-relaxed">
                           {todayExercise.explanation}
                         </p>
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-4 border-t border-border/50">
-                      <p className="text-xs text-muted-foreground mb-3">Key takeaways:</p>
-                      <ul className="space-y-2">
+                    <div className="pt-5 border-t border-accent/20">
+                      <p className="text-xs font-semibold text-accent uppercase tracking-wider mb-4">Key takeaways</p>
+                      <ul className="space-y-3">
                         {todayExercise.tips.map((tip, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm">
-                            <CheckCircle2 className="w-4 h-4 text-foreground shrink-0 mt-0.5" />
+                          <motion.li 
+                            key={i} 
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                            className="flex items-start gap-3 text-sm p-3 rounded-lg bg-background/50"
+                          >
+                            <CheckCircle2 className="w-5 h-5 text-accent shrink-0 mt-0.5" />
                             {tip}
-                          </li>
+                          </motion.li>
                         ))}
                       </ul>
                     </div>
 
-                    <button className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-foreground text-background rounded-xl font-medium hover:bg-foreground/90 transition-colors">
-                      <Shuffle className="w-4 h-4" />
+                    <button className="mt-6 w-full flex items-center justify-center gap-2 py-4 bg-foreground text-background rounded-xl font-semibold hover:bg-foreground/90 transition-all shadow-lg">
+                      <Shuffle className="w-5 h-5" />
                       Next Exercise
                     </button>
                   </motion.div>
@@ -291,39 +403,49 @@ export default function LearnPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.2 }}
               className="lg:col-span-1 glass-card rounded-2xl p-6"
             >
-              <h3 className="font-medium mb-4">Exercise Types</h3>
+              <h3 className="font-semibold text-lg mb-6">Exercise Types</h3>
               
-              <div className="space-y-3">
-                {exerciseTypes.map((type) => (
-                  <button
-                    key={type.id}
-                    className="w-full flex items-center gap-4 p-4 rounded-xl glass-subtle hover:bg-white/5 transition-colors text-left"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-secondary/50 flex items-center justify-center shrink-0">
-                      <type.icon className="w-5 h-5" />
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm">{type.name}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="flex-1 h-1 bg-secondary rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-foreground rounded-full"
-                            style={{ width: `${(type.completed / type.exercises) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {type.completed}/{type.exercises}
-                        </span>
+              <div className="space-y-4">
+                {exerciseTypes.map((type, i) => {
+                  const colors = colorClasses[type.color]
+                  return (
+                    <motion.button
+                      key={type.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 + 0.25 }}
+                      className="w-full flex items-center gap-4 p-4 rounded-xl glass-subtle hover:bg-secondary/50 transition-all text-left group"
+                    >
+                      <div className={`w-12 h-12 rounded-xl ${colors.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                        <type.icon className={`w-6 h-6 ${colors.text}`} />
                       </div>
-                    </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold">{type.name}</h4>
+                        <p className="text-xs text-muted-foreground mt-0.5">{type.description}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${(type.completed / type.exercises) * 100}%` }}
+                              transition={{ delay: i * 0.1 + 0.3 }}
+                              className={`h-full rounded-full`}
+                              style={{ backgroundColor: `var(--${type.color}-500, currentColor)` }}
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {type.completed}/{type.exercises}
+                          </span>
+                        </div>
+                      </div>
 
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                ))}
+                      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
+                    </motion.button>
+                  )
+                })}
               </div>
             </motion.div>
 
@@ -331,44 +453,52 @@ export default function LearnPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.3 }}
               className="lg:col-span-2 glass-card rounded-2xl p-6"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium">Recent Exercises</h3>
-                <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  View all
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-semibold text-lg">Recent Exercises</h3>
+                <button className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 group">
+                  View all <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
 
-              <div className="space-y-3">
-                {pastExercises.map((exercise, i) => (
-                  <motion.div
-                    key={exercise.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 + 0.2 }}
-                    className="flex items-center gap-4 p-4 rounded-xl glass-subtle"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-5 h-5" />
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm">{exercise.title}</h4>
-                      <p className="text-xs text-muted-foreground">{exercise.type}</p>
-                    </div>
+              <div className="space-y-4">
+                {pastExercises.map((exercise, i) => {
+                  const colors = colorClasses[exercise.color]
+                  return (
+                    <motion.div
+                      key={exercise.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 + 0.35 }}
+                      className="flex items-center gap-4 p-4 rounded-xl glass-subtle hover:bg-secondary/50 transition-all cursor-pointer group"
+                    >
+                      <div className={`w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center shrink-0`}>
+                        <CheckCircle2 className="w-6 h-6 text-green-400" />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold group-hover:text-foreground transition-colors">{exercise.title}</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${colors.bg} ${colors.text}`}>
+                            {exercise.type}
+                          </span>
+                          <span className="text-xs text-muted-foreground">{exercise.date}</span>
+                        </div>
+                      </div>
 
-                    <div className="text-right shrink-0">
-                      <div className="text-lg font-medium">{exercise.score}</div>
-                      <div className="text-[10px] text-muted-foreground">{exercise.date}</div>
-                    </div>
-                  </motion.div>
-                ))}
+                      <div className="text-right shrink-0">
+                        <div className="text-2xl font-bold">{exercise.score}</div>
+                        <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Score</div>
+                      </div>
+                    </motion.div>
+                  )
+                })}
               </div>
 
-              <button className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-xl glass-subtle hover:bg-white/5 transition-colors text-sm">
-                <Play className="w-4 h-4" />
+              <button className="w-full mt-6 flex items-center justify-center gap-2 py-4 rounded-xl glass-subtle hover:bg-secondary transition-colors font-medium">
+                <Play className="w-5 h-5" />
                 Practice More
               </button>
             </motion.div>
