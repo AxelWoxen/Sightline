@@ -8,6 +8,13 @@ async function getChallengeById(id) {
   return get('SELECT * FROM challenges WHERE id = ?', [id]);
 }
 
+async function getChallengesByStyle(preferredStyle) {
+  return all(
+    'SELECT * FROM challenges WHERE category = ? ORDER BY id ASC',
+    [preferredStyle]
+  );
+}
+
 async function getTodayChallenge(preferredStyle) {
   return get(
     'SELECT * FROM challenges WHERE category = ? ORDER BY RANDOM() LIMIT 1',
@@ -15,4 +22,9 @@ async function getTodayChallenge(preferredStyle) {
   );
 }
 
-module.exports = { getAllChallenges, getChallengeById, getTodayChallenge };
+module.exports = {
+  getAllChallenges,
+  getChallengeById,
+  getTodayChallenge,
+  getChallengesByStyle
+};
