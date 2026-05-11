@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<main class="page">
+  <section class="dashboard-header">
+    <div>
+      <p class="eyebrow">AI critique</p>
+      <h1>Your photo feedback</h1>
+      <% if (photo.challenge_title) { %>
+        <p class="muted">Challenge: <%= photo.challenge_title %></p>
+      <% } %>
+    </div>
+    <a class="button secondary" href="/photos/upload">Upload another</a>
+  </section>
+
+  <section class="grid two">
+    <article class="card">
+      <img class="photo-large" src="<%= photo.image_path %>" alt="Uploaded photo" />
+      <% if (photo.caption) { %>
+        <p class="muted">Your intention: <%= photo.caption %></p>
+      <% } %>
+    </article>
+
+    <article class="card">
+      <h2>Structured feedback</h2>
+      <div class="score-list">
+        <div><span>Composition</span><strong><%= critique.composition_score %></strong></div>
+        <div><span>Lighting</span><strong><%= critique.lighting_score %></strong></div>
+        <div><span>Storytelling</span><strong><%= critique.storytelling_score %></strong></div>
+        <div><span>Technical</span><strong><%= critique.technical_score %></strong></div>
+      </div>
+      <p><%= critique.feedback_text %></p>
+      <div class="next-task">
+        <p class="eyebrow">Next task</p>
+        <p><%= critique.next_task %></p>
+      </div>
+    </article>
+  </section>
+</main>
+<%- include('partials/footer') %>

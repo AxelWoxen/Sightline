@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<main class="page">
+  <section class="dashboard-header">
+    <div>
+      <p class="eyebrow">Progress</p>
+      <h1>Your photography journey</h1>
+      <p class="muted">Her ser du uploads, score og historikk fra databasen.</p>
+    </div>
+  </section>
+
+  <section class="grid four">
+    <article class="card stat"><strong><%= stats.photosCount %></strong><span>Photos</span></article>
+    <article class="card stat"><strong><%= stats.averageComposition %></strong><span>Composition</span></article>
+    <article class="card stat"><strong><%= stats.averageLighting %></strong><span>Lighting</span></article>
+    <article class="card stat"><strong><%= stats.averageStorytelling %></strong><span>Storytelling</span></article>
+  </section>
+
+  <section class="gallery">
+    <% if (photos.length === 0) { %>
+      <article class="card"><p>No photos yet. Upload your first one.</p></article>
+    <% } %>
+
+    <% photos.forEach(photo => { %>
+      <article class="card submission">
+        <img src="<%= photo.image_path %>" alt="Uploaded photo" />
+        <div>
+          <p class="eyebrow"><%= new Date(photo.uploaded_at).toLocaleDateString() %></p>
+          <h2>Score: <%= photo.composition_score || '-' %> / <%= photo.lighting_score || '-' %> / <%= photo.storytelling_score || '-' %></h2>
+          <p class="muted"><%= photo.feedback_text ? photo.feedback_text.slice(0, 160) + '...' : 'No critique yet.' %></p>
+          <a href="/critique/<%= photo.id %>">Open critique</a>
+        </div>
+      </article>
+    <% }) %>
+  </section>
+</main>
+<%- include('partials/footer') %>

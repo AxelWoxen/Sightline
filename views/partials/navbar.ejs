@@ -1,0 +1,13 @@
+<nav class="nav">
+  <a class="brand" href="/dashboard">Sightline</a>
+  <div class="nav-links">
+    <% if (currentUser) { %>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/photos/upload">Upload</a>
+      <a href="/challenges">Challenges</a>
+      <a href="/progress">Progress</a>
+    <% } else { %>
+      <a href="/onboarding">Start</a>
+    <% } %>
+  </div>
+</nav>

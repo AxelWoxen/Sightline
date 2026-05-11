@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<main class="page">
+  <section class="dashboard-header">
+    <div>
+      <p class="eyebrow">Welcome back</p>
+      <h1>Good to see you, <%= currentUser.name %></h1>
+      <p class="muted">Your style: <%= currentUser.preferred_style %></p>
+    </div>
+    <a class="button primary" href="/photos/upload">Upload photo</a>
+  </section>
+
+  <section class="grid two">
+    <article class="card highlight">
+      <p class="eyebrow">Today's challenge</p>
+      <h2><%= challenge.title %></h2>
+      <p><%= challenge.description %></p>
+      <div class="tag-row">
+        <span class="tag"><%= challenge.category %></span>
+        <span class="tag"><%= challenge.difficulty %></span>
+      </div>
+      <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Use this challenge</a>
+    </article>
+
+    <article class="card">
+      <p class="eyebrow">MVP stats</p>
+      <div class="stats">
+        <div><strong><%= photosCount %></strong><span>photos</span></div>
+        <div><strong><%= critiquedCount %></strong><span>critiques</span></div>
+      </div>
+      <% if (latest) { %>
+        <p class="muted">Latest upload:</p>
+        <img class="thumb" src="<%= latest.image_path %>" alt="Latest uploaded photo" />
+      <% } else { %>
+        <p class="muted">Upload your first photo to start building progress.</p>
+      <% } %>
+    </article>
+  </section>
+</main>
+<%- include('partials/footer') %>

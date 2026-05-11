@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<main class="page">
+  <section class="dashboard-header">
+    <div>
+      <p class="eyebrow">Practice loop</p>
+      <h1>Challenges</h1>
+      <p class="muted">Disse er seedet i databasen og kan senere gjøres personlige.</p>
+    </div>
+  </section>
+
+  <section class="grid three">
+    <% challenges.forEach(challenge => { %>
+      <article class="card">
+        <p class="eyebrow"><%= challenge.category %></p>
+        <h2><%= challenge.title %></h2>
+        <p><%= challenge.description %></p>
+        <span class="tag"><%= challenge.difficulty %></span>
+        <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Try challenge</a>
+      </article>
+    <% }) %>
+  </section>
+</main>
+<%- include('partials/footer') %>

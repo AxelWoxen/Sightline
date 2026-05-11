@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<main class="page narrow">
+  <section class="card">
+    <p class="eyebrow">Upload</p>
+    <h1>Submit a photo for critique</h1>
+    <p class="muted">Første MVP-versjon lager mock-feedback. Senere kan samme controller kobles til OpenAI API.</p>
+
+    <form class="form" action="/photos/upload" method="POST" enctype="multipart/form-data">
+      <label>Choose challenge
+        <select name="challenge_id">
+          <% challenges.forEach(challenge => { %>
+            <option value="<%= challenge.id %>"><%= challenge.title %> — <%= challenge.category %></option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>Photo
+        <input type="file" name="photo" accept="image/*" required />
+      </label>
+
+      <label>What were you trying to capture?
+        <textarea name="caption" rows="4" placeholder="Mood, light, subject, story..."></textarea>
+      </label>
+
+      <button class="button primary" type="submit">Upload and get critique</button>
+    </form>
+  </section>
+</main>
+<%- include('partials/footer') %>
