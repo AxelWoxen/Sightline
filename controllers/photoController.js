@@ -5,6 +5,8 @@ const multer = require('multer');
 const photoModel = require('../models/photoModel');
 const challengeModel = require('../models/challengeModel');
 const critiqueModel = require('../models/critiqueModel');
+const { extractPhotoSettings } = require('../services/exifService');
+
 
 const { generateAICritique } = require('../services/critiqueService');
 
@@ -120,11 +122,16 @@ exports.handleUpload = async (req, res) => {
       caption: req.body.caption || null,
     });
 
+    const imageFilePath = path.join(uploadsDir, req.file.filename);
+
+    const photoSettings = await extractPhotoSettings(imageFilePath);
+
     const critique = await generateAICritique({
       user: req.session.user,
       caption: req.body.caption || '',
       challenge: selectedChallenge,
-      image_path: path.join(uploadsDir, req.file.filename),
+      image_path: imageFilePath,
+      photoSettings
     });
 
     await critiqueModel.createCritique({

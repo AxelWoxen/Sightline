@@ -102,6 +102,10 @@ input, select, textarea {
 }
 textarea { resize: vertical; }
 
+.feedback-text {
+  white-space: pre-line;
+}
+
 .button {
   display: inline-flex;
   justify-content: center;
