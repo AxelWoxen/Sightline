@@ -16,6 +16,16 @@
     <article class="card stat"><strong><%= stats.averageStorytelling %></strong><span>Storytelling</span></article>
   </section>
 
+  <% if (focusArea && focusArea.value > 0) { %>
+    <section class="card">
+      <p class="eyebrow">Current focus area</p>
+      <h2><%= focusArea.name %></h2>
+      <p class="muted">
+        This is currently your lowest average score, so this should be your main focus in the next uploads.
+      </p>
+    </section>
+  <% } %>
+
   <section class="gallery">
     <% if (photos.length === 0) { %>
       <article class="card"><p>No photos yet. Upload your first one.</p></article>

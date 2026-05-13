@@ -16,5 +16,20 @@ exports.showProgress = async (req, res) => {
     averageStorytelling: average(scored.map((p) => p.storytelling_score)),
     averageTechnical: average(scored.map((p) => p.technical_score)),
   };
-  res.render('progress', { title: 'Progress', photos, stats });
+  
+  const focusScores = [
+    { name: 'Composition', value: stats.averageComposition },
+    { name: 'Lighting', value: stats.averageLighting },
+    { name: 'Storytelling', value: stats.averageStorytelling },
+    { name: 'Technical', value: stats.averageTechnical },
+  ];
+  
+  const focusArea = focusScores.sort((a, b) => a.value - b.value)[0];
+
+  res.render('progress', {
+    title: 'Progress',
+    photos,
+    stats,
+    focusArea
+  });
 };
