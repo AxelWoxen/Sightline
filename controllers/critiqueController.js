@@ -13,13 +13,22 @@ exports.showCritique = async (req, res) => {
 
     const critique = await critiqueModel.getCritiqueByPhotoId(photo.id);
 
+    if (!critique) {
+      return res.status(404).render('error', {
+        title: 'Critique missing',
+        message: 'AI critique has not been generated yet.'
+      });
+    }
+
     res.render('critique', {
       title: 'AI critique',
       photo,
       critique
     });
+
   } catch (error) {
-    console.error(error);
+    console.error('Critique controller error:', error);
+
     res.status(500).render('error', {
       title: 'Critique error',
       message: 'Could not load critique.'

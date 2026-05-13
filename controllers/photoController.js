@@ -5,7 +5,8 @@ const multer = require('multer');
 const photoModel = require('../models/photoModel');
 const challengeModel = require('../models/challengeModel');
 const critiqueModel = require('../models/critiqueModel');
-const { generateMockCritique } = require('../services/critiqueService');
+
+const { generateAICritique } = require('../services/critiqueService');
 
 const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
 
@@ -71,6 +72,7 @@ exports.showUploadPage = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+
     res.status(500).render('error', {
       title: 'Upload error',
       message: 'Could not load upload page.'
@@ -94,6 +96,7 @@ exports.handleUpload = async (req, res) => {
     }
 
     const selectedChallengeId = req.body.challenge_id || null;
+
     const selectedChallenge = selectedChallengeId
       ? await challengeModel.getChallengeById(selectedChallengeId)
       : null;
@@ -117,10 +120,11 @@ exports.handleUpload = async (req, res) => {
       caption: req.body.caption || null,
     });
 
-    const critique = generateMockCritique({
+    const critique = await generateAICritique({
       user: req.session.user,
       caption: req.body.caption || '',
       challenge: selectedChallenge,
+      image_path: path.join(uploadsDir, req.file.filename),
     });
 
     await critiqueModel.createCritique({
@@ -150,6 +154,7 @@ exports.handleUpload = async (req, res) => {
     }
 
     res.redirect(`/critique/${createdPhoto.id}`);
+
   } catch (error) {
     console.error(error);
 
@@ -194,6 +199,7 @@ exports.deletePhoto = async (req, res) => {
     await photoModel.deletePhotoById(photo.id);
 
     res.redirect('/progress');
+
   } catch (error) {
     console.error(error);
 
