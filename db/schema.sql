@@ -57,3 +57,6 @@ INSERT INTO challenges (title, description, category, difficulty) VALUES
 ('Window light', 'Take a portrait using soft natural light from a window.', 'Portrait photography', 'Easy'),
 ('Subject separation', 'Create separation between the person and the background using light, distance or contrast.', 'Portrait photography', 'Medium'),
 ('Expression over pose', 'Take a portrait where the expression feels natural, not overly posed.', 'Portrait photography', 'Easy');
+
+ALTER TABLE challenges
+ADD COLUMN focus_area TEXT;
