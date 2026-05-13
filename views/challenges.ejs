@@ -5,20 +5,71 @@
     <div>
       <p class="eyebrow">Practice loop</p>
       <h1>Challenges</h1>
-      <p class="muted">Disse er seedet i databasen og kan senere gjøres personlige.</p>
+      <p class="muted">Choose a focused exercise, upload your result, and build a sharper eye over time.</p>
     </div>
+    <a class="button primary" href="/photos/upload">Upload photo</a>
   </section>
 
-  <section class="grid three">
-    <% challenges.forEach(challenge => { %>
+  <% if (recommendedChallenges && recommendedChallenges.length > 0) { %>
+    <section class="section-block">
+      <div class="section-title-row">
+        <div>
+          <p class="eyebrow">Recommended for you</p>
+          <% if (focusArea) { %>
+            <h2>Focus on <%= focusArea.name %></h2>
+            <p class="muted">Your recent scores suggest this is the best area to train next.</p>
+          <% } else { %>
+            <h2>Start with your selected style</h2>
+            <p class="muted">After a few critiques, Sightline will recommend challenges based on your weakest area.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <section class="grid three">
+        <% recommendedChallenges.forEach(challenge => { %>
+          <article class="card challenge-card recommended">
+            <p class="eyebrow"><%= challenge.category %></p>
+            <h2><%= challenge.title %></h2>
+            <p><%= challenge.description %></p>
+            <div class="tag-row">
+              <span class="tag"><%= challenge.difficulty %></span>
+              <% if (challenge.focus_area) { %>
+                <span class="tag"><%= challenge.focus_area %></span>
+              <% } %>
+            </div>
+            <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Try challenge</a>
+          </article>
+        <% }) %>
+      </section>
+    </section>
+  <% } %>
+
+  <section class="section-block">
+    <p class="eyebrow">All <%= preferredStyle || 'available' %> challenges</p>
+
+    <% if (!challenges || challenges.length === 0) { %>
       <article class="card">
-        <p class="eyebrow"><%= challenge.category %></p>
-        <h2><%= challenge.title %></h2>
-        <p><%= challenge.description %></p>
-        <span class="tag"><%= challenge.difficulty %></span>
-        <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Try challenge</a>
+        <h2>No challenges available yet</h2>
+        <p class="muted">Add challenges to the database to start practicing.</p>
       </article>
-    <% }) %>
+    <% } else { %>
+      <section class="grid three">
+        <% otherChallenges.forEach(challenge => { %>
+          <article class="card challenge-card">
+            <p class="eyebrow"><%= challenge.category %></p>
+            <h2><%= challenge.title %></h2>
+            <p><%= challenge.description %></p>
+            <div class="tag-row">
+              <span class="tag"><%= challenge.difficulty %></span>
+              <% if (challenge.focus_area) { %>
+                <span class="tag"><%= challenge.focus_area %></span>
+              <% } %>
+            </div>
+            <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Try challenge</a>
+          </article>
+        <% }) %>
+      </section>
+    <% } %>
   </section>
 </main>
 <%- include('partials/footer') %>

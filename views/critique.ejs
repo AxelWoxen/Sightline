@@ -18,21 +18,35 @@
       <% if (photo.caption) { %>
         <p class="muted">Your intention: <%= photo.caption %></p>
       <% } %>
+      <% if (photo.challenge_focus_area) { %>
+        <div class="tag-row">
+          <span class="tag"><%= photo.challenge_focus_area %></span>
+          <% if (photo.challenge_category) { %>
+            <span class="tag"><%= photo.challenge_category %></span>
+          <% } %>
+        </div>
+      <% } %>
     </article>
 
     <article class="card">
       <h2>Structured feedback</h2>
-      <div class="score-list">
-        <div><span>Composition</span><strong><%= critique.composition_score %></strong></div>
-        <div><span>Lighting</span><strong><%= critique.lighting_score %></strong></div>
-        <div><span>Storytelling</span><strong><%= critique.storytelling_score %></strong></div>
-        <div><span>Technical</span><strong><%= critique.technical_score %></strong></div>
-      </div>
-      <p><%= critique.feedback_text %></p>
-      <div class="next-task">
-        <p class="eyebrow">Next task</p>
-        <p><%= critique.next_task %></p>
-      </div>
+
+      <% if (critique) { %>
+        <div class="score-list">
+          <div><span>Composition</span><strong><%= critique.composition_score %></strong></div>
+          <div><span>Lighting</span><strong><%= critique.lighting_score %></strong></div>
+          <div><span>Storytelling</span><strong><%= critique.storytelling_score %></strong></div>
+          <div><span>Technical</span><strong><%= critique.technical_score %></strong></div>
+        </div>
+        <p><%= critique.feedback_text %></p>
+        <div class="next-task">
+          <p class="eyebrow">Next task</p>
+          <p><%= critique.next_task %></p>
+        </div>
+      <% } else { %>
+        <p class="muted">No critique is available for this photo yet.</p>
+        <p>This can happen if a previous upload was interrupted. The photo is still saved, and the critique flow can be regenerated later when the AI service is connected.</p>
+      <% } %>
     </article>
   </section>
 </main>

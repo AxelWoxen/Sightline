@@ -12,7 +12,7 @@ async function createPhoto({ user_id, challenge_id, image_path, original_name, c
 
 async function getPhotoById(id) {
   return get(
-    `SELECT photos.*, challenges.title AS challenge_title, challenges.description AS challenge_description
+    `SELECT photos.*, challenges.title AS challenge_title, challenges.description AS challenge_description, challenges.category AS challenge_category, challenges.focus_area AS challenge_focus_area
      FROM photos
      LEFT JOIN challenges ON photos.challenge_id = challenges.id
      WHERE photos.id = ?`,
@@ -25,6 +25,7 @@ async function getPhotosByUser(userId) {
     `SELECT photos.*, 
             challenges.title AS challenge_title,
             challenges.category AS challenge_category,
+            challenges.focus_area AS challenge_focus_area,
             critiques.composition_score, 
             critiques.lighting_score,
             critiques.storytelling_score, 

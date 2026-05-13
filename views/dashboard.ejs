@@ -4,7 +4,7 @@
   <section class="dashboard-header">
     <div>
       <p class="eyebrow">Welcome back</p>
-      <h1>Good to see you,  <%= currentUser.name %></h1>
+      <h1>Good to see you, <%= currentUser.name %></h1>
       <p class="muted">Your style: <%= currentUser.preferred_style %></p>
     </div>
     <a class="button primary" href="/photos/upload">Upload photo</a>
@@ -13,13 +13,21 @@
   <section class="grid two">
     <article class="card highlight">
       <p class="eyebrow">Today's challenge</p>
-      <h2><%= challenge.title %></h2>
-      <p><%= challenge.description %></p>
-      <div class="tag-row">
-        <span class="tag"><%= challenge.category %></span>
-        <span class="tag"><%= challenge.difficulty %></span>
-      </div>
-      <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Use this challenge</a>
+      <% if (challenge) { %>
+        <h2><%= challenge.title %></h2>
+        <p><%= challenge.description %></p>
+        <div class="tag-row">
+          <span class="tag"><%= challenge.category %></span>
+          <span class="tag"><%= challenge.difficulty %></span>
+          <% if (challenge.focus_area) { %>
+            <span class="tag"><%= challenge.focus_area %></span>
+          <% } %>
+        </div>
+        <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Use this challenge</a>
+      <% } else { %>
+        <h2>No challenge available yet</h2>
+        <p class="muted">Add challenges to the database to start the practice loop.</p>
+      <% } %>
     </article>
 
     <article class="card">

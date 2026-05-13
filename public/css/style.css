@@ -141,3 +141,28 @@ textarea { resize: vertical; }
   .submission { grid-template-columns: 1fr; }
   .submission img { width: 100%; height: 240px; }
 }
+
+.section-block { margin-top: 34px; }
+.section-title-row { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin-bottom: 18px; }
+.challenge-card { display: flex; flex-direction: column; }
+.challenge-card .button { margin-top: auto; }
+.recommended { background: linear-gradient(135deg, rgba(215,185,143,0.16), rgba(255,255,255,0.055)); }
+.error-message {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255,120,120,0.35);
+  border-radius: 16px;
+  background: rgba(255,90,90,0.10);
+  color: #ffd3d3;
+  font-weight: 700;
+}
+.danger {
+  background: rgba(255,90,90,0.10);
+  color: #ffd3d3;
+  border-color: rgba(255,120,120,0.35);
+}
+.danger:hover { background: rgba(255,90,90,0.16); }
+
+@media (max-width: 840px) {
+  .section-title-row { align-items: start; flex-direction: column; }
+}

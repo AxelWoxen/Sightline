@@ -7,9 +7,36 @@ const challengeModel = require('../models/challengeModel');
 const critiqueModel = require('../models/critiqueModel');
 const { generateMockCritique } = require('../services/critiqueService');
 
+const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
+
+function deleteUploadedFile(file) {
+  if (!file || !file.filename) return;
+
+  const filePath = path.join(uploadsDir, file.filename);
+
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+}
+
+async function getUploadChallenges(user) {
+  let challenges = await challengeModel.getChallengesByStyle(user.preferred_style);
+
+  if (!challenges || challenges.length === 0) {
+    challenges = await challengeModel.getAllChallenges();
+  }
+
+  return challenges;
+}
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) =>
-    cb(null, path.join(__dirname, '..', 'public', 'uploads')),
+  destination: (req, file, cb) => {
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    cb(null, uploadsDir);
+  },
 
   filename: (req, file, cb) => {
     const safeName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
@@ -32,42 +59,59 @@ exports.upload = multer({
 });
 
 exports.showUploadPage = async (req, res) => {
-  let challenges = await challengeModel.getChallengesByStyle(
-    req.session.user.preferred_style
-  );
-  
-  if (!challenges || challenges.length === 0) {
-    challenges = await challengeModel.getAllChallenges();
+  try {
+    const challenges = await getUploadChallenges(req.session.user);
+    const selectedChallengeId = req.query.challenge || null;
+
+    res.render('upload', {
+      title: 'Upload photo',
+      challenges,
+      selectedChallengeId,
+      error: null
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', {
+      title: 'Upload error',
+      message: 'Could not load upload page.'
+    });
   }
-
-  const selectedChallengeId = req.query.challenge || null;
-
-  res.render('upload', {
-    title: 'Upload photo',
-    challenges,
-    selectedChallengeId,
-    error: null
-  });
 };
 
 exports.handleUpload = async (req, res) => {
+  let createdPhoto = null;
+
   try {
+    const challenges = await getUploadChallenges(req.session.user);
+
     if (!req.file) {
-      const challenges = await challengeModel.getChallengesByStyle(
-        req.session.user.preferred_style
-      );
-    
       return res.status(400).render('upload', {
         title: 'Upload photo',
         challenges,
         selectedChallengeId: req.body.challenge_id || null,
-        error: 'Please choose a photo before uploading.'  
+        error: 'Please choose a photo before uploading.'
       });
     }
 
-    const photo = await photoModel.createPhoto({
+    const selectedChallengeId = req.body.challenge_id || null;
+    const selectedChallenge = selectedChallengeId
+      ? await challengeModel.getChallengeById(selectedChallengeId)
+      : null;
+
+    if (!selectedChallenge) {
+      deleteUploadedFile(req.file);
+
+      return res.status(400).render('upload', {
+        title: 'Upload photo',
+        challenges,
+        selectedChallengeId,
+        error: 'Please choose a valid challenge before uploading.'
+      });
+    }
+
+    createdPhoto = await photoModel.createPhoto({
       user_id: req.session.user.id,
-      challenge_id: req.body.challenge_id || null,
+      challenge_id: selectedChallenge.id,
       image_path: `/uploads/${req.file.filename}`,
       original_name: req.file.originalname,
       caption: req.body.caption || null,
@@ -75,11 +119,12 @@ exports.handleUpload = async (req, res) => {
 
     const critique = generateMockCritique({
       user: req.session.user,
-      caption: req.body.caption || null,
+      caption: req.body.caption || '',
+      challenge: selectedChallenge,
     });
 
     await critiqueModel.createCritique({
-      photo_id: photo.id,
+      photo_id: createdPhoto.id,
       ...critique
     });
 
@@ -104,9 +149,17 @@ exports.handleUpload = async (req, res) => {
       }
     }
 
-    res.redirect(`/critique/${photo.id}`);
+    res.redirect(`/critique/${createdPhoto.id}`);
   } catch (error) {
     console.error(error);
+
+    if (createdPhoto) {
+      await critiqueModel.deleteCritiqueByPhotoId(createdPhoto.id);
+      await photoModel.deletePhotoById(createdPhoto.id);
+    }
+
+    deleteUploadedFile(req.file);
+
     res.status(500).render('error', {
       title: 'Upload error',
       message: 'Could not upload photo.'

@@ -1,41 +1,34 @@
 # Sightline MVP
 
-En klassisk Express + EJS + SQLite MVP for en AI-fotocoach.
+Sightline er en lokal Express + EJS + SQLite MVP for en AI-fotomentor. Ideen er å hjelpe brukeren med å lære å se bedre gjennom korte challenges, bildeopplasting, strukturert feedback og enkel progresjon.
+
+## Produktidé
+
+Kjerneflyten er:
+
+```text
+Onboarding -> Dashboard -> Challenge -> Upload photo -> Critique -> Progress
+```
+
+MVP-en er bevisst bygget slik at mest mulig produktlogikk fungerer lokalt før betalte tjenester kobles på. OpenAI, Cloudinary, ekte auth og deployment kan derfor legges til senere uten å endre hele brukerreisen.
 
 ## Hva appen gjør nå
 
-- Onboarding av bruker
-- Dashboard med dagens challenge
-- Bildeopplasting via Multer
-- Lagring i SQLite-database
-- Mock AI-feedback med scores
-- Progress-side med tidligere bilder og gjennomsnitt
-- Klassisk struktur med routes, controllers, models og views
-
-## Mappestruktur
-
-```text
-sightline-mvp/
-  app.js
-  routes/
-  controllers/
-  models/
-  services/
-  middleware/
-  views/
-    partials/
-  public/
-    css/
-    js/
-    uploads/
-  db/
-```
+- Onboarding med navn, nivå, stil, kamera og mål
+- Dashboard med dagens challenge og enkel status
+- Challenges-side med anbefalte challenges basert på stil og svakeste område
+- Bildeopplasting med lokal lagring via Multer
+- Validering av filtype og filstørrelse
+- Maks 5 bilder per bruker
+- Mock critique med scores, feedback og next task
+- Progress-side med historikk, gjennomsnitt og focus area
+- Mulighet til å åpne tidligere critiques igjen
+- Manuell sletting av bilder
 
 ## Kom i gang
 
 ```bash
 npm install
-cp .env.example .env
 npm start
 ```
 
@@ -45,27 +38,30 @@ npm start
 http://localhost:3000
 ```
 
+## Reset lokal database
+
+```bash
+npm run reset-db
+npm start
+```
+
+Reset-scriptet sletter `db/sightline.sqlite` og rydder `public/uploads`. Når appen startes igjen, opprettes databasen på nytt fra `models/db.js`.
+
+`db/schema.sql` er kun en referansefil slik at databasestrukturen er lett å lese samlet.
+
 ## Viktigste routes
 
 ```text
 /                     landing page
-/onboarding           oppretter brukerprofil
-/dashboard            dagens challenge og stats
+/onboarding           oppretter demo-brukerprofil
+/dashboard            dagens challenge og status
+/challenges           anbefalte og tilgjengelige challenges
 /photos/upload        bildeopplasting
 /critique/:photoId    feedback på bilde
 /progress             historikk og progresjon
-/challenges           alle challenges
 ```
 
-## Neste steg
-
-1. Bytt `generateMockCritique()` i `services/critiqueService.js` med ekte OpenAI-kall.
-2. Legg til ekte innlogging i stedet for session-basert demo-bruker.
-3. Gjør challenges personlige basert på `preferred_style`, `experience_level` og tidligere svakheter.
-4. Legg til en `weaknesses`-tabell eller analyser score over tid.
-5. Bytt eventuelt SQLite med PostgreSQL når appen skal deployes.
-
-## Hvor AI skal kobles inn
+## Hvor AI skal kobles inn senere
 
 Den viktigste filen er:
 
@@ -73,12 +69,21 @@ Den viktigste filen er:
 services/critiqueService.js
 ```
 
-Akkurat nå genererer den mock-feedback. Senere bør den ta inn:
+Akkurat nå returnerer den mock-feedback. Senere kan samme funksjon erstattes med et OpenAI-kall som tar inn:
 
-- brukerprofil
-- challenge
 - bilde
+- brukerprofil
+- valgt challenge
+- challenge focus area
 - caption/intensjon
-- tidligere feedback
+- tidligere svakheter
 
-Og returnere strukturert feedback som lagres i `critiques`-tabellen.
+og returnerer strukturert feedback som lagres i `critiques`-tabellen.
+
+## Neste store integrasjoner
+
+- Ekte auth i stedet for session-basert demo-bruker
+- OpenAI Vision for ekte bildekritikk
+- Cloudinary eller tilsvarende for bildehosting
+- PostgreSQL eller annen sky-database ved deployment
+- Railway/Vercel/Fly.io eller tilsvarende hosting
