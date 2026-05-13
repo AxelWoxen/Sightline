@@ -9,19 +9,26 @@
     </div>
   </section>
 
-  <section class="grid four">
+  <section class="grid five">
     <article class="card stat"><strong><%= stats.photosCount %></strong><span>Photos</span></article>
     <article class="card stat"><strong><%= stats.averageComposition %></strong><span>Composition</span></article>
     <article class="card stat"><strong><%= stats.averageLighting %></strong><span>Lighting</span></article>
     <article class="card stat"><strong><%= stats.averageStorytelling %></strong><span>Storytelling</span></article>
+    <article class="card stat">
+      <strong><%= stats.averageTechnical %></strong>
+      <span>Technical</span>
+    </article>
   </section>
 
   <% if (focusArea && focusArea.value > 0) { %>
-    <section class="card">
+    <section class="card" style="margin-top: 24px;">
       <p class="eyebrow">Current focus area</p>
-      <h2><%= focusArea.name %></h2>
-      <p class="muted">
-        This is currently your lowest average score, so this should be your main focus in the next uploads.
+  
+      <p>
+        Your weakest area right now is
+        <strong><%= focusArea.name %></strong>
+        with an average score of
+        <strong><%= focusArea.value %></strong>.
       </p>
     </section>
   <% } %>
