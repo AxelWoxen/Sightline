@@ -6,27 +6,54 @@ async function createPhoto({ user_id, challenge_id, image_path, original_name, c
      VALUES (?, ?, ?, ?, ?)`,
     [user_id, challenge_id || null, image_path, original_name, caption || null]
   );
+
   return get('SELECT * FROM photos WHERE id = ?', [result.id]);
 }
 
 async function getPhotoById(id) {
-  return get(`
-    SELECT photos.*, challenges.title AS challenge_title, challenges.description AS challenge_description
-    FROM photos
-    LEFT JOIN challenges ON photos.challenge_id = challenges.id
-    WHERE photos.id = ?
-  `, [id]);
+  return get(
+    `SELECT photos.*, challenges.title AS challenge_title, challenges.description AS challenge_description
+     FROM photos
+     LEFT JOIN challenges ON photos.challenge_id = challenges.id
+     WHERE photos.id = ?`,
+    [id]
+  );
 }
 
 async function getPhotosByUser(userId) {
-  return all(`
-    SELECT photos.*, critiques.composition_score, critiques.lighting_score, critiques.storytelling_score,
-           critiques.technical_score, critiques.feedback_text, critiques.next_task
-    FROM photos
-    LEFT JOIN critiques ON critiques.photo_id = photos.id
-    WHERE photos.user_id = ?
-    ORDER BY photos.uploaded_at DESC
-  `, [userId]);
+  return all(
+    `SELECT photos.*, critiques.composition_score, critiques.lighting_score,
+            critiques.storytelling_score, critiques.technical_score,
+            critiques.feedback_text, critiques.next_task
+     FROM photos
+     LEFT JOIN critiques ON critiques.photo_id = photos.id
+     WHERE photos.user_id = ?
+     ORDER BY photos.uploaded_at DESC`,
+    [userId]
+  );
 }
 
-module.exports = { createPhoto, getPhotoById, getPhotosByUser };
+async function deleteOldestPhotoForUser(userId) {
+  const oldestPhoto = await get(
+    `SELECT *
+     FROM photos
+     WHERE user_id = ?
+     ORDER BY uploaded_at ASC
+     LIMIT 1`,
+    [userId]
+  );
+
+  if (!oldestPhoto) return null;
+
+  await run('DELETE FROM critiques WHERE photo_id = ?', [oldestPhoto.id]);
+  await run('DELETE FROM photos WHERE id = ?', [oldestPhoto.id]);
+
+  return oldestPhoto;
+}
+
+module.exports = {
+  createPhoto,
+  getPhotoById,
+  getPhotosByUser,
+  deleteOldestPhotoForUser
+};
