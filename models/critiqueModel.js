@@ -13,4 +13,8 @@ async function getCritiqueByPhotoId(photoId) {
   return get('SELECT * FROM critiques WHERE photo_id = ?', [photoId]);
 }
 
-module.exports = { createCritique, getCritiqueByPhotoId };
+async function deleteCritiqueByPhotoId(photoId) {
+  return run('DELETE FROM critiques WHERE photo_id = ?', [photoId]);
+}
+
+module.exports = { createCritique, getCritiqueByPhotoId, deleteCritiqueByPhotoId };

@@ -113,3 +113,40 @@ exports.handleUpload = async (req, res) => {
     });
   }
 };
+
+exports.deletePhoto = async (req, res) => {
+  try {
+    const photo = await photoModel.getPhotoById(req.params.photoId);
+
+    if (!photo || photo.user_id !== req.session.user.id) {
+      return res.status(404).render('404', {
+        title: 'Photo not found'
+      });
+    }
+
+    if (photo.image_path) {
+      const filePath = path.join(
+        __dirname,
+        '..',
+        'public',
+        photo.image_path
+      );
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    await critiqueModel.deleteCritiqueByPhotoId(photo.id);
+    await photoModel.deletePhotoById(photo.id);
+
+    res.redirect('/progress');
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).render('error', {
+      title: 'Delete error',
+      message: 'Could not delete photo.'
+    });
+  }
+};

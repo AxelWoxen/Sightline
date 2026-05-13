@@ -26,9 +26,19 @@
         <img src="<%= photo.image_path %>" alt="Uploaded photo" />
         <div>
           <p class="eyebrow"><%= new Date(photo.uploaded_at).toLocaleDateString() %></p>
+          <% if (photo.challenge_title) { %>
+            <p class="muted">
+              Challenge: <%= photo.challenge_title %>
+            </p>
+          <% } %>
           <h2>Score: <%= photo.composition_score || '-' %> / <%= photo.lighting_score || '-' %> / <%= photo.storytelling_score || '-' %></h2>
           <p class="muted"><%= photo.feedback_text ? photo.feedback_text.slice(0, 160) + '...' : 'No critique yet.' %></p>
           <a href="/critique/<%= photo.id %>">Open critique</a>
+          <form action="/photos/delete/<%= photo.id %>" method="POST" style="margin-top: 12px;">
+            <button class="button danger" type="submit">
+              Delete photo
+            </button>
+          </form>
         </div>
       </article>
     <% }) %>

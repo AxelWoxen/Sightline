@@ -14,4 +14,6 @@ router.post(
       });
     },
     photoController.handleUpload
-  );    
+);
+
+router.post('/delete/:photoId', requireUser, photoController.deletePhoto);

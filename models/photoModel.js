@@ -22,15 +22,26 @@ async function getPhotoById(id) {
 
 async function getPhotosByUser(userId) {
   return all(
-    `SELECT photos.*, critiques.composition_score, critiques.lighting_score,
-            critiques.storytelling_score, critiques.technical_score,
-            critiques.feedback_text, critiques.next_task
+    `SELECT photos.*, 
+            challenges.title AS challenge_title,
+            challenges.category AS challenge_category,
+            critiques.composition_score, 
+            critiques.lighting_score,
+            critiques.storytelling_score, 
+            critiques.technical_score,
+            critiques.feedback_text, 
+            critiques.next_task
      FROM photos
+     LEFT JOIN challenges ON photos.challenge_id = challenges.id
      LEFT JOIN critiques ON critiques.photo_id = photos.id
      WHERE photos.user_id = ?
      ORDER BY photos.uploaded_at DESC`,
     [userId]
   );
+}
+
+async function deletePhotoById(photoId) {
+  return run('DELETE FROM photos WHERE id = ?', [photoId]);
 }
 
 async function deleteOldestPhotoForUser(userId) {
@@ -55,5 +66,6 @@ module.exports = {
   createPhoto,
   getPhotoById,
   getPhotosByUser,
-  deleteOldestPhotoForUser
+  deleteOldestPhotoForUser,
+  deletePhotoById
 };
