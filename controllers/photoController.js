@@ -24,9 +24,12 @@ exports.showUploadPage = async (req, res) => {
     req.session.user.preferred_style
   );
 
+  const selectedChallengeId = req.query.challenge || null;
+
   res.render('upload', {
     title: 'Upload photo',
-    challenges
+    challenges,
+    selectedChallengeId
   });
 };
 

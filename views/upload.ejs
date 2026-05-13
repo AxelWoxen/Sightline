@@ -10,7 +10,12 @@
       <label>Choose challenge
         <select name="challenge_id">
           <% challenges.forEach(challenge => { %>
-            <option value="<%= challenge.id %>"><%= challenge.title %> — <%= challenge.category %></option>
+            <option
+              value="<%= challenge.id %>"
+              <%= String(challenge.id) === String(selectedChallengeId) ? 'selected' : '' %>
+            >
+              <%= challenge.title %>
+            </option>
           <% }) %>
         </select>
       </label>
