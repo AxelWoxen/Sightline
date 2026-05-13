@@ -6,6 +6,15 @@
     <h1>Submit a photo for critique</h1>
     <p class="muted">Første MVP-versjon lager mock-feedback. Senere kan samme controller kobles til OpenAI API.</p>
 
+    <% if (typeof error !== 'undefined') { %>
+      <div class="error-message">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (!challenges || challenges.length === 0) { %>
+      <p class="muted">No challenges available yet.</p>
+    <% } else { %>
     <form class="form" action="/photos/upload" method="POST" enctype="multipart/form-data">
       <label>Choose challenge
         <select name="challenge_id">
@@ -30,6 +39,7 @@
 
       <button class="button primary" type="submit">Upload and get critique</button>
     </form>
+    <% } %>
   </section>
 </main>
 <%- include('partials/footer') %>

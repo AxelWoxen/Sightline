@@ -17,37 +17,65 @@ const storage = multer.diskStorage({
   },
 });
 
-exports.upload = multer({ storage });
+exports.upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024
+  },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed'));
+    }
+
+    cb(null, true);
+  }
+});
 
 exports.showUploadPage = async (req, res) => {
-  const challenges = await challengeModel.getChallengesByStyle(
+  let challenges = await challengeModel.getChallengesByStyle(
     req.session.user.preferred_style
   );
+  
+  if (!challenges || challenges.length === 0) {
+    challenges = await challengeModel.getAllChallenges();
+  }
 
   const selectedChallengeId = req.query.challenge || null;
 
   res.render('upload', {
     title: 'Upload photo',
     challenges,
-    selectedChallengeId
+    selectedChallengeId,
+    error: null
   });
 };
 
 exports.handleUpload = async (req, res) => {
   try {
-    if (!req.file) return res.redirect('/photos/upload');
+    if (!req.file) {
+      const challenges = await challengeModel.getChallengesByStyle(
+        req.session.user.preferred_style
+      );
+    
+      return res.status(400).render('upload', {
+        title: 'Upload photo',
+        challenges,
+        selectedChallengeId: req.body.challenge_id || null,
+        error: 'Please choose a photo before uploading.'  
+      });
+    }
 
     const photo = await photoModel.createPhoto({
       user_id: req.session.user.id,
-      challenge_id: req.body.challenge_id,
+      challenge_id: req.body.challenge_id || null,
       image_path: `/uploads/${req.file.filename}`,
       original_name: req.file.originalname,
-      caption: req.body.caption,
+      caption: req.body.caption || null,
     });
 
     const critique = generateMockCritique({
       user: req.session.user,
-      caption: req.body.caption,
+      caption: req.body.caption || null,
     });
 
     await critiqueModel.createCritique({

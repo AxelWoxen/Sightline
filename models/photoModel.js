@@ -38,7 +38,7 @@ async function deleteOldestPhotoForUser(userId) {
     `SELECT *
      FROM photos
      WHERE user_id = ?
-     ORDER BY uploaded_at ASC
+     ORDER BY uploaded_at ASC, id ASC
      LIMIT 1`,
     [userId]
   );
