@@ -128,36 +128,26 @@ async function generateAICritique({ user, caption, challenge, image_path, photoS
 
   const imageUrl = imageToBase64(image_path);
 
-  const response = await openai.responses.create({
-    model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
-    input: [
+  const response = await openai.chat.completions.create({
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    messages: [
       {
         role: 'user',
         content: [
-          {
-            type: 'input_text',
-            text: buildPrompt({
-              user,
-              caption,
-              challenge,
-              photoSettings
-            }),
-          },
-          {
-            type: 'input_image',
-            image_url: imageUrl,
-          },
-        ],
-      },
+          { type: 'text', text: buildPrompt({ user, caption, challenge, photoSettings }) },
+          { type: 'image_url', image_url: { url: imageUrl } }
+        ]
+      }
     ],
-  });
+    max_tokens: 1000
+  })
 
   let parsed;
 
   try {
-    parsed = JSON.parse(response.output_text);
+    parsed = JSON.parse(response.choices[0].message.content);
   } catch (error) {
-    console.error('Raw AI response:', response.output_text);
+    console.error('Raw AI response:', response.choices[0].message.content);
     throw new Error('Could not parse AI response as JSON.');
   }
 
