@@ -11,7 +11,8 @@ __v0_jsx-dev-runtime.ts
 db/sightline.sqlite
 public/uploads/
 .env
+
 # Common ignores
 node_modules
 .next/
-.DS_Store
+.DS_Store.claude/
