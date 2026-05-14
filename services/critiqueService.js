@@ -39,15 +39,18 @@ function buildPrompt({ user, caption, challenge, photoSettings }) {
 
   const cameraInfo = user?.camera || 'Unknown camera';
 
-  const isCompactOrPhone = /ixus|powershot|iphone|samsung|pixel|huawei|lumix|coolpix|cybershot|finepix|compact|point.and.shoot/i.test(cameraInfo);
-
   const flashFired = photoSettings?.flash &&
     typeof photoSettings.flash === 'string' &&
     photoSettings.flash.toLowerCase().includes('fired');
 
-  const cameraAdvice = isCompactOrPhone
-    ? `This is a compact camera or smartphone. The user CANNOT manually change aperture, ISO or shutter speed. Never suggest this. What they CAN control: flash on/off, distance to subject, angle, timing, composition, zoom level.`
-    : `This camera has manual controls. If the photo has a clear technical problem that specific settings would fix, give ONE concrete recommendation with exact values — for example "skru ISO ned til 400" or "bruk lukker 1/500s". Always explain in one sentence what that setting does in plain language. Never assume the user knows photography terms. But only reccomend technical changes if considered nescessary`;
+  const cameraAdvice = `
+Based on your knowledge of "${cameraInfo}":
+- First, determine if this is a compact/phone (no manual controls) or a camera with manual settings.
+- If compact or phone: only suggest what the user CAN control — flash on/off, distance, composition, timing, zoom.
+- If it has manual controls: give ONE concrete setting recommendation with exact values if the photo has a clear technical problem. Example: "skru ISO ned til 400" or "sett lukker til 1/500s". Explain in one plain sentence what that setting does.
+- Never suggest a setting that doesn't exist on this specific camera.
+- Never assume — if you are unsure what the camera can do, default to composition and light advice only.
+`;
 
   return `
 You are Sightline — a photography mentor for complete beginners.
