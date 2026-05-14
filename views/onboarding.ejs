@@ -1,45 +1,154 @@
 <%- include('partials/header') %>
 <main class="page narrow">
-  <section class="card">
-    <p class="eyebrow">Step 1</p>
-    <h1>Build your photo profile</h1>
-    <p class="muted">Denne informasjonen brukes senere for å gjøre challenges og feedback mer personlig.</p>
 
-    <form class="form" action="/onboarding" method="POST">
-      <label>Name
-        <input name="name" placeholder="Axel" required />
-      </label>
+  <div class="ob-progress">
+    <div class="ob-dot active" data-step="1"></div>
+    <div class="ob-line"></div>
+    <div class="ob-dot" data-step="2"></div>
+    <div class="ob-line"></div>
+    <div class="ob-dot" data-step="3"></div>
+  </div>
 
-      <label>Email
-        <input type="email" name="email" placeholder="you@example.com" />
-      </label>
+  <form id="ob-form" action="/onboarding" method="POST">
 
-      <label>Experience level
-        <select name="experience_level" required>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-        </select>
-      </label>
+    <!-- Steg 1: Identitet -->
+    <section class="card ob-step" id="ob-step-1">
+      <p class="eyebrow">Steg 1 av 3</p>
+      <h1>Hvem er du?</h1>
+      <p class="muted">Sightline bruker dette for å gjøre feedback mer personlig.</p>
 
-      <label>Preferred style
-        <select name="preferred_style" required>
-          <option value="Street photography">Street photography</option>
-          <option value="Landscape photography">Landscape photography</option>
-          <option value="Portrait photography">Portrait photography</option>
-        </select>
-      </label>
+      <div class="form">
+        <label>Navn
+          <input name="name" placeholder="Axel" required />
+        </label>
 
-      <label>Camera / phone
-        <input name="camera" placeholder="iPhone, Fujifilm, Sony, Canon..." />
-      </label>
+        <label>Email
+          <input type="email" name="email" placeholder="du@eksempel.com" />
+        </label>
 
-      <label>Your goal
-        <textarea name="goal" rows="4" placeholder="I want to take better travel and street photos..."></textarea>
-      </label>
+        <label>Erfaring
+          <div class="ob-choice-group">
+            <label class="ob-choice">
+              <input type="radio" name="experience_level" value="Beginner" />
+              <span>
+                <strong>Nybegynner</strong>
+                <small>Har nettopp startet, eller tar frem kameraet av og til</small>
+              </span>
+            </label>
+            <label class="ob-choice">
+              <input type="radio" name="experience_level" value="Intermediate" />
+              <span>
+                <strong>Litt erfaring</strong>
+                <small>Har holdt på en stund, kjenner til noen innstillinger</small>
+              </span>
+            </label>
+            <label class="ob-choice">
+              <input type="radio" name="experience_level" value="Advanced" />
+              <span>
+                <strong>Har holdt på en stund</strong>
+                <small>Komfortabel med manuell modus og redigering</small>
+              </span>
+            </label>
+          </div>
+        </label>
 
-      <button class="button primary" type="submit">Create profile</button>
-    </form>
-  </section>
+        <label>Kamera eller telefon
+          <input name="camera" placeholder="iPhone, Fujifilm, Sony, Canon..." />
+        </label>
+
+        <button type="button" class="button primary" id="ob-next-1">Neste →</button>
+      </div>
+    </section>
+
+    <!-- Steg 2: Stil -->
+    <section class="card ob-step ob-hidden" id="ob-step-2">
+      <p class="eyebrow">Steg 2 av 3</p>
+      <h1>Hva fotograferer du?</h1>
+      <p class="muted">Velg den stilen som passer best til det du vil lære.</p>
+
+      <div class="ob-style-group">
+        <label class="ob-style-card">
+          <input type="radio" name="preferred_style" value="Street photography" />
+          <div class="ob-style-inner">
+            <strong>Street</strong>
+            <small>Mennesker, byer, øyeblikk i hverdagen</small>
+          </div>
+        </label>
+        <label class="ob-style-card">
+          <input type="radio" name="preferred_style" value="Landscape photography" />
+          <div class="ob-style-inner">
+            <strong>Landskap</strong>
+            <small>Natur, lys, vide perspektiver</small>
+          </div>
+        </label>
+        <label class="ob-style-card">
+          <input type="radio" name="preferred_style" value="Portrait photography" />
+          <div class="ob-style-inner">
+            <strong>Portrett</strong>
+            <small>Ansikter, uttrykk, nær kontakt med motiv</small>
+          </div>
+        </label>
+      </div>
+
+      <div class="ob-nav-row">
+        <button type="button" class="button secondary" id="ob-back-2">← Tilbake</button>
+        <button type="button" class="button primary" id="ob-next-2">Neste →</button>
+      </div>
+    </section>
+
+    <!-- Steg 3: Mål -->
+    <section class="card ob-step ob-hidden" id="ob-step-3">
+      <p class="eyebrow">Steg 3 av 3</p>
+      <h1>Hva vil du bli bedre til?</h1>
+
+      <div class="form">
+        <label>
+          <textarea name="goal" rows="4" placeholder="Jeg vil ta bedre bilder av..."></textarea>
+        </label>
+
+        <p class="muted" style="font-size:0.9rem;margin:0">
+          Sightline gir deg én konkret forbedring per bilde. Ikke en liste med alt som er feil.
+        </p>
+
+        <div class="ob-nav-row">
+          <button type="button" class="button secondary" id="ob-back-3">← Tilbake</button>
+          <button type="submit" class="button primary">Lag profil</button>
+        </div>
+      </div>
+    </section>
+
+  </form>
 </main>
+
+<script>
+(function () {
+  function showStep(n) {
+    document.querySelectorAll('.ob-step').forEach(function (s) {
+      s.classList.add('ob-hidden');
+    });
+    document.getElementById('ob-step-' + n).classList.remove('ob-hidden');
+    document.querySelectorAll('.ob-dot').forEach(function (d) {
+      d.classList.toggle('active', Number(d.dataset.step) <= n);
+    });
+  }
+
+  document.getElementById('ob-next-1').addEventListener('click', function () {
+    var name = document.querySelector('[name="name"]').value.trim();
+    var exp  = document.querySelector('[name="experience_level"]:checked');
+    if (!name) { alert('Skriv inn navnet ditt.'); return; }
+    if (!exp)  { alert('Velg erfaringsnivå.'); return; }
+    showStep(2);
+  });
+
+  document.getElementById('ob-next-2').addEventListener('click', function () {
+    var style = document.querySelector('[name="preferred_style"]:checked');
+    if (!style) { alert('Velg en stil.'); return; }
+    showStep(3);
+  });
+
+  document.getElementById('ob-back-2').addEventListener('click', function () { showStep(1); });
+  document.getElementById('ob-back-3').addEventListener('click', function () { showStep(2); });
+})();
+</script>
+
 <%- include('partials/footer') %>
