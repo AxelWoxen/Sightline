@@ -3,16 +3,16 @@
 <main class="page">
   <section class="dashboard-header">
     <div>
-      <p class="eyebrow">Welcome back</p>
-      <h1>Good to see you, <%= currentUser.name %></h1>
-      <p class="muted">Your style: <%= currentUser.preferred_style %></p>
+      <p class="eyebrow">Velkommen tilbake</p>
+      <h1>Hei, <%= currentUser.name %></h1>
+      <p class="muted"><%= currentUser.preferred_style %></p>
     </div>
-    <a class="button primary" href="/photos/upload">Upload photo</a>
+    <a class="button primary" href="/photos/upload">Last opp bilde</a>
   </section>
 
   <section class="grid two">
     <article class="card highlight">
-      <p class="eyebrow">Today's challenge</p>
+      <p class="eyebrow">Dagens utfordring</p>
       <% if (challenge) { %>
         <h2><%= challenge.title %></h2>
         <p><%= challenge.description %></p>
@@ -23,24 +23,46 @@
             <span class="tag"><%= challenge.focus_area %></span>
           <% } %>
         </div>
-        <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Use this challenge</a>
+        <a class="button secondary" href="/photos/upload?challenge=<%= challenge.id %>">Bruk denne utfordringen</a>
       <% } else { %>
-        <h2>No challenge available yet</h2>
-        <p class="muted">Add challenges to the database to start the practice loop.</p>
+        <h2>Ingen utfordring tilgjengelig</h2>
+        <p class="muted">Legg til utfordringer i databasen for å starte øvingssyklusen.</p>
       <% } %>
     </article>
 
     <article class="card">
-      <p class="eyebrow">MVP stats</p>
-      <div class="stats">
-        <div><strong><%= photosCount %></strong><span>photos</span></div>
-        <div><strong><%= critiquedCount %></strong><span>critiques</span></div>
-      </div>
-      <% if (latest) { %>
-        <p class="muted">Latest upload:</p>
-        <img class="thumb" src="<%= latest.image_path %>" alt="Latest uploaded photo" />
+      <% if (latest && latest.feedback_text) { %>
+        <p class="eyebrow">Siste tilbakemelding</p>
+        <img class="thumb" src="/<%= latest.image_path.replace(/^\//, '') %>" alt="Siste bilde" />
+
+        <% var avgScore = Math.round(((latest.composition_score || 0) + (latest.lighting_score || 0) + (latest.storytelling_score || 0) + (latest.technical_score || 0)) / 4); %>
+        <div class="dash-score-row">
+          <span class="muted" style="font-size:0.85rem;white-space:nowrap">Snittskår</span>
+          <div class="score-track" style="flex:1">
+            <div class="score-fill" style="width:<%= avgScore %>%"></div>
+          </div>
+          <strong style="color:var(--accent)"><%= avgScore %></strong>
+        </div>
+
+        <% if (latest.challenge_focus_area) { %>
+          <p class="muted" style="font-size:0.85rem;margin-top:10px">
+            Sist fokusområde: <strong style="color:var(--text)"><%= latest.challenge_focus_area %></strong>
+          </p>
+        <% } %>
+
+        <a class="button secondary" href="/photos/upload<%= latest.challenge_id ? '?challenge=' + latest.challenge_id : '' %>">Fortsett å øve</a>
+
+      <% } else if (latest) { %>
+        <p class="eyebrow">Siste bilde</p>
+        <img class="thumb" src="/<%= latest.image_path.replace(/^\//, '') %>" alt="Siste bilde" />
+        <p class="muted" style="margin-top:12px;font-size:0.9rem">Tilbakemeldingen genereres…</p>
+
       <% } else { %>
-        <p class="muted">Upload your first photo to start building progress.</p>
+        <div class="dash-empty">
+          <h2>Last opp ditt første bilde</h2>
+          <p class="muted">Du laster opp ett bilde, og Sightline forteller deg én konkret ting du kan gjøre bedre neste gang.</p>
+          <a class="button primary" href="/photos/upload">Kom i gang</a>
+        </div>
       <% } %>
     </article>
   </section>
