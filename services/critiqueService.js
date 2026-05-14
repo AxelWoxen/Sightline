@@ -122,6 +122,37 @@ Max 220 words total in feedback_text.
 `;
 }
 
+function parseFeedbackSections(feedbackText) {
+  const sections = {
+    what_works: '',
+    technical: '',
+    camera: '',
+    next_time: ''
+  };
+
+  if (!feedbackText) return sections;
+
+  const lines = feedbackText.split('\n');
+  let current = null;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('Hva fungerer')) {
+      current = 'what_works';
+    } else if (trimmed.startsWith('Hva som skjedde teknisk')) {
+      current = 'technical';
+    } else if (trimmed.startsWith('Hva du faktisk kan gjøre')) {
+      current = 'camera';
+    } else if (trimmed.startsWith('Prøv dette neste gang')) {
+      current = 'next_time';
+    } else if (current && trimmed) {
+      sections[current] += (sections[current] ? ' ' : '') + trimmed;
+    }
+  }
+
+  return sections;
+}
+
 async function generateAICritique({ user, caption, challenge, image_path, photoSettings }) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY is missing in .env');
@@ -158,12 +189,18 @@ async function generateAICritique({ user, caption, challenge, image_path, photoS
     throw new Error('Could not parse AI response as JSON.');
   }
 
+  const sections = parseFeedbackSections(parsed.feedback_text);
+
   return {
     composition_score: clampScore(parsed.composition_score),
     lighting_score: clampScore(parsed.lighting_score),
     storytelling_score: clampScore(parsed.storytelling_score),
     technical_score: clampScore(parsed.technical_score),
     feedback_text: parsed.feedback_text || 'No feedback generated.',
+    feedback_what_works: sections.what_works,
+    feedback_technical: sections.technical,
+    feedback_camera: sections.camera,
+    feedback_next_time: sections.next_time,
     next_task: parsed.next_task || 'Ta samme bilde igjen, men endre én ting bevisst.',
   };
 }

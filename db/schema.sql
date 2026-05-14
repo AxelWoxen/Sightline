@@ -42,6 +42,10 @@ CREATE TABLE critiques (
   storytelling_score INTEGER,
   technical_score INTEGER,
   feedback_text TEXT,
+  feedback_what_works TEXT,
+  feedback_technical TEXT,
+  feedback_camera TEXT,
+  feedback_next_time TEXT,
   next_task TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(photo_id) REFERENCES photos(id)
