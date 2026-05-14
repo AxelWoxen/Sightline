@@ -2,9 +2,9 @@
 <%- include('partials/navbar') %>
 <main class="page narrow">
   <section class="card">
-    <p class="eyebrow">Upload</p>
-    <h1>Submit a photo for critique</h1>
-    <p class="muted">Choose a challenge, upload one image, and get structured local MVP feedback. Later, this same flow can be connected to real AI.</p>
+    <p class="eyebrow">Last opp</p>
+    <h1>Send inn et bilde for tilbakemelding</h1>
+    <p class="muted">Velg en utfordring, last opp ett bilde, og få AI-feedback innen 15 sekunder.</p>
 
     <% if (error) { %>
       <div class="error-message">
@@ -13,11 +13,11 @@
     <% } %>
 
     <% if (!challenges || challenges.length === 0) { %>
-      <p class="muted">No challenges are available yet. Add challenges to the database before uploading.</p>
-      <a class="button secondary" href="/dashboard">Back to dashboard</a>
+      <p class="muted">Ingen utfordringer er tilgjengelig ennå. Legg til utfordringer i databasen.</p>
+      <a class="button secondary" href="/dashboard">Tilbake til dashboard</a>
     <% } else { %>
-      <form class="form" action="/photos/upload" method="POST" enctype="multipart/form-data">
-        <label>Choose challenge
+      <form class="form" id="upload-form" action="/photos/upload" method="POST" enctype="multipart/form-data">
+        <label>Velg utfordring
           <select name="challenge_id" required>
             <% challenges.forEach(challenge => { %>
               <option
@@ -30,15 +30,15 @@
           </select>
         </label>
 
-        <label>Photo
+        <label>Bilde
           <input type="file" name="photo" accept="image/*" required />
         </label>
 
-        <label>What were you trying to capture?
-          <textarea name="caption" rows="4" placeholder="Mood, light, subject, story..."></textarea>
+        <label>Hva prøvde du å fange?
+          <textarea name="caption" rows="4" placeholder="Stemning, lys, motiv, historie..."></textarea>
         </label>
 
-        <button class="button primary" type="submit">Upload and get critique</button>
+        <button class="button primary" id="upload-btn" type="submit">Last opp og få tilbakemelding</button>
       </form>
     <% } %>
   </section>
