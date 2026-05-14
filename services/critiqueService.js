@@ -123,30 +123,25 @@ Max 220 words total in feedback_text.
 }
 
 function parseFeedbackSections(feedbackText) {
-  const sections = {
-    what_works: '',
-    technical: '',
-    camera: '',
-    next_time: ''
-  };
-
+  const sections = { what_works: '', technical: '', camera: '', next_time: '' };
   if (!feedbackText) return sections;
 
-  const lines = feedbackText.split('\n');
-  let current = null;
+  // Split on the known Norwegian headers whether they appear on their own line or inline.
+  // The pattern captures the header itself so we can identify which section follows.
+  const pattern = /(Hva fungerer:|Hva som skjedde teknisk:|Hva du faktisk kan gjøre[^:]*:|Prøv dette neste gang:)/;
+  const parts = feedbackText.split(pattern);
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed.startsWith('Hva fungerer')) {
-      current = 'what_works';
-    } else if (trimmed.startsWith('Hva som skjedde teknisk')) {
-      current = 'technical';
-    } else if (trimmed.startsWith('Hva du faktisk kan gjøre')) {
-      current = 'camera';
-    } else if (trimmed.startsWith('Prøv dette neste gang')) {
-      current = 'next_time';
-    } else if (current && trimmed) {
-      sections[current] += (sections[current] ? ' ' : '') + trimmed;
+  for (let i = 1; i < parts.length; i += 2) {
+    const header = parts[i];
+    const body = (parts[i + 1] || '').trim();
+    if (header.startsWith('Hva fungerer')) {
+      sections.what_works = body;
+    } else if (header.startsWith('Hva som skjedde teknisk')) {
+      sections.technical = body;
+    } else if (header.startsWith('Hva du faktisk kan gjøre')) {
+      sections.camera = body;
+    } else if (header.startsWith('Prøv dette neste gang')) {
+      sections.next_time = body;
     }
   }
 
