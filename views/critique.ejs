@@ -65,50 +65,41 @@
 
   <section class="critique-feedback">
     <%
-      const SECTIONS = [
-        'Hva fungerer',
-        'Hvorfor bildet ser slik ut',
-        'Kameraets rolle',
-        'Prøv dette neste gang',
-      ];
-
-      const feedbackLines = (critique.feedback_text || '').split('\n');
-
-      function extractSection(label) {
-        const startIdx = feedbackLines.findIndex(function(l) {
-          return l.trim().startsWith(label);
-        });
-        if (startIdx === -1) return null;
-        var body = [];
-        for (var i = startIdx + 1; i < feedbackLines.length; i++) {
-          var line = feedbackLines[i].trim();
-          if (SECTIONS.some(function(s) { return line.startsWith(s); })) break;
-          body.push(feedbackLines[i]);
+      var parsedSections = [];
+      try {
+        var lines = (critique.feedback_text || '').split('\n');
+        var current = null;
+        for (var li = 0; li < lines.length; li++) {
+          var trimmed = lines[li].trim();
+          // A header is any non-empty line whose trimmed form ends with ":"
+          if (trimmed.length > 0 && trimmed.endsWith(':')) {
+            if (current) parsedSections.push(current);
+            current = { heading: trimmed.slice(0, -1), body: [] };
+          } else if (current) {
+            current.body.push(lines[li]);
+          }
         }
-        return body.join('\n').trim() || null;
+        if (current) parsedSections.push(current);
+        // Drop sections with no body text
+        parsedSections = parsedSections.filter(function(s) {
+          return s.body.join('').trim().length > 0;
+        });
+      } catch (e) {
+        parsedSections = [];
       }
-
-      var nums = ['01', '02', '03', '04'];
-      var hasAnySections = SECTIONS.some(function(s) { return extractSection(s); });
     %>
 
-    <% if (hasAnySections) { %>
-      <% SECTIONS.forEach(function(label, i) {
-        var content = extractSection(label);
-        if (!content) return;
-      %>
-      <article class="feedback-section card">
-        <div class="feedback-section-header">
-          <span class="feedback-num"><%= nums[i] %></span>
-          <h3><%= label %></h3>
-        </div>
-        <p class="feedback-body"><%= content %></p>
-      </article>
+    <% if (parsedSections.length > 0) { %>
+      <% parsedSections.forEach(function(s) { %>
+      <div class="feedback-section">
+        <p class="eyebrow"><%= s.heading %></p>
+        <p><%= s.body.join('\n').trim() %></p>
+      </div>
       <% }); %>
     <% } else { %>
-      <article class="card">
+      <div class="feedback-section">
         <p class="feedback-text"><%= critique.feedback_text %></p>
-      </article>
+      </div>
     <% } %>
   </section>
 
