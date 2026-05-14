@@ -29,37 +29,6 @@ function imageToBase64(imagePath) {
   return `data:${mimeType};base64,${base64}`;
 }
 
-function parseFeedbackSections(feedbackText) {
-  const sections = {
-    what_works: '',
-    technical: '',
-    camera: '',
-    next_time: ''
-  };
-
-  if (!feedbackText) return sections;
-
-  const lines = feedbackText.split('\n');
-  let current = null;
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed.startsWith('Hva fungerer')) {
-      current = 'what_works';
-    } else if (trimmed.startsWith('Hva som skjedde teknisk')) {
-      current = 'technical';
-    } else if (trimmed.startsWith('Hva du faktisk kan gjøre') || trimmed.startsWith('Hva du kan gjøre')) {
-      current = 'camera';
-    } else if (trimmed.startsWith('Prøv dette neste gang')) {
-      current = 'next_time';
-    } else if (current && trimmed) {
-      sections[current] += (sections[current] ? ' ' : '') + trimmed;
-    }
-  }
-
-  return sections;
-}
-
 function buildPrompt({ user, caption, challenge, photoSettings }) {
 
   const hasExif = photoSettings && (
@@ -78,7 +47,7 @@ function buildPrompt({ user, caption, challenge, photoSettings }) {
 
   const cameraAdvice = isCompactOrPhone
     ? `This is a compact camera or smartphone. The user CANNOT manually change aperture, ISO or shutter speed. Never suggest this. What they CAN control: flash on/off, distance to subject, angle, timing, composition, zoom level.`
-    : `This camera has manual controls. If the photo has a clear technical problem that specific settings would fix, give ONE concrete recommendation with exact values — for example "skru ISO ned til 400" or "bruk lukker 1/500s". Always explain in one sentence what that setting does in plain language. Never assume the user knows photography terms.`;
+    : `This camera has manual controls. If the photo has a clear technical problem that specific settings would fix, give ONE concrete recommendation with exact values — for example "skru ISO ned til 400" or "bruk lukker 1/500s". Always explain in one sentence what that setting does in plain language. Never assume the user knows photography terms. But only reccomend technical changes if considered nescessary`;
 
   return `
 You are Sightline — a photography mentor for complete beginners.
@@ -139,18 +108,44 @@ Hva fungerer:
 [Be specific. Name actual elements in the photo — the red chair, the church spire, the snowflakes. 1-2 sentences max.]
 
 Hva som skjedde teknisk:
-[Explain the single most important technical thing that shaped this photo. If flash fired, explain exactly what it hit and what it caused. Use cause-and-effect language. Never vague.]
+[Explain the single most important technical thing that shaped this photo. If flash fired, explain exactly what it hit and what it caused. If the scene is dark, explain why. Use cause-and-effect language: "Fordi blitsen din traff snøfnugg rett foran linsen, ble de hvite og store i stedet for gjennomsiktige." Never vague.]
 
 Hva du faktisk kan gjøre med ${cameraInfo}:
-[Be honest about what this camera can and cannot do. If it has manual controls and there is a clear fix, give the exact setting with a plain-language explanation of what it does.]
+[Be honest about what this camera can and cannot do. If they can't change aperture — say so and redirect to what they CAN do instead.]
 
 Prøv dette neste gang:
-[ONE thing. Hyper-specific. Must be doable with their exact camera.]
+[ONE thing. Hyper-specific. Not "experiment with light." Example: "Neste gang det snør, skru av blitsen og hold kameraet helt stille i 2 sekunder — scenen har nok lys til det, og du slipper de hvite prikkene." Must be doable with their exact camera.]
 
 next_task: one concrete exercise matched to their camera and skill level. Max 2 sentences.
 
 Max 220 words total in feedback_text.
 `;
+}
+
+function parseFeedbackSections(feedbackText) {
+  const sections = { what_works: '', technical: '', camera: '', next_time: '' };
+  if (!feedbackText) return sections;
+
+  // Split on the known Norwegian headers whether they appear on their own line or inline.
+  // Capture group keeps the header in the parts array so we can identify each section.
+  const pattern = /(Hva fungerer:|Hva som skjedde teknisk:|Hva du faktisk kan gjøre[^:]*:|Prøv dette neste gang:)/;
+  const parts = feedbackText.split(pattern);
+
+  for (let i = 1; i < parts.length; i += 2) {
+    const header = parts[i];
+    const body = (parts[i + 1] || '').trim();
+    if (header.startsWith('Hva fungerer')) {
+      sections.what_works = body;
+    } else if (header.startsWith('Hva som skjedde teknisk')) {
+      sections.technical = body;
+    } else if (header.startsWith('Hva du faktisk kan gjøre')) {
+      sections.camera = body;
+    } else if (header.startsWith('Prøv dette neste gang')) {
+      sections.next_time = body;
+    }
+  }
+
+  return sections;
 }
 
 async function generateAICritique({ user, caption, challenge, image_path, photoSettings }) {
