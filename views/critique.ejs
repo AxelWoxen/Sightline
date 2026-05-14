@@ -1,53 +1,139 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar') %>
 <main class="page">
-  <section class="dashboard-header">
-    <div>
-      <p class="eyebrow">AI critique</p>
-      <h1>Your photo feedback</h1>
-      <% if (photo.challenge_title) { %>
-        <p class="muted">Challenge: <%= photo.challenge_title %></p>
-      <% } %>
+
+  <section class="critique-hero">
+    <p class="eyebrow">AI-tilbakemelding</p>
+    <h1><%= photo.caption || 'Ditt bilde' %></h1>
+    <% if (photo.challenge_title) { %>
+      <p class="muted">Utfordring: <strong style="color:var(--text)"><%= photo.challenge_title %></strong></p>
+    <% } %>
+    <% if (photo.challenge_focus_area) { %>
+      <div class="tag-row">
+        <span class="tag"><%= photo.challenge_focus_area %></span>
+        <% if (photo.challenge_category) { %>
+          <span class="tag"><%= photo.challenge_category %></span>
+        <% } %>
+      </div>
+    <% } %>
+  </section>
+
+  <div class="critique-photo-wrap">
+    <img class="critique-photo" src="/<%= photo.image_path.replace(/^\//, '') %>" alt="Opplastet bilde" />
+  </div>
+
+  <% if (critique) { %>
+
+  <section class="critique-scores card">
+    <h2>Scorer</h2>
+    <div class="score-bars">
+
+      <div class="score-bar-row">
+        <span class="score-label">Komposisjon</span>
+        <div class="score-track">
+          <div class="score-fill" style="width:<%= critique.composition_score %>%"></div>
+        </div>
+        <span class="score-num"><%= critique.composition_score %></span>
+      </div>
+
+      <div class="score-bar-row">
+        <span class="score-label">Lys</span>
+        <div class="score-track">
+          <div class="score-fill" style="width:<%= critique.lighting_score %>%"></div>
+        </div>
+        <span class="score-num"><%= critique.lighting_score %></span>
+      </div>
+
+      <div class="score-bar-row">
+        <span class="score-label">Historiefortelling</span>
+        <div class="score-track">
+          <div class="score-fill" style="width:<%= critique.storytelling_score %>%"></div>
+        </div>
+        <span class="score-num"><%= critique.storytelling_score %></span>
+      </div>
+
+      <div class="score-bar-row">
+        <span class="score-label">Teknisk</span>
+        <div class="score-track">
+          <div class="score-fill" style="width:<%= critique.technical_score %>%"></div>
+        </div>
+        <span class="score-num"><%= critique.technical_score %></span>
+      </div>
+
     </div>
-    <a class="button secondary" href="/photos/upload">Upload another</a>
   </section>
 
-  <section class="grid two">
-    <article class="card">
-      <img class="photo-large" src="<%= photo.image_path %>" alt="Uploaded photo" />
-      <% if (photo.caption) { %>
-        <p class="muted">Your intention: <%= photo.caption %></p>
-      <% } %>
-      <% if (photo.challenge_focus_area) { %>
-        <div class="tag-row">
-          <span class="tag"><%= photo.challenge_focus_area %></span>
-          <% if (photo.challenge_category) { %>
-            <span class="tag"><%= photo.challenge_category %></span>
-          <% } %>
-        </div>
-      <% } %>
-    </article>
+  <section class="critique-feedback">
+    <%
+      const SECTIONS = [
+        'Hva fungerer',
+        'Hvorfor bildet ser slik ut',
+        'Kameraets rolle',
+        'Prøv dette neste gang',
+      ];
 
-    <article class="card">
-      <h2>Structured feedback</h2>
+      const feedbackLines = (critique.feedback_text || '').split('\n');
 
-      <% if (critique) { %>
-        <div class="score-list">
-          <div><span>Composition</span><strong><%= critique.composition_score %></strong></div>
-          <div><span>Lighting</span><strong><%= critique.lighting_score %></strong></div>
-          <div><span>Storytelling</span><strong><%= critique.storytelling_score %></strong></div>
-          <div><span>Technical</span><strong><%= critique.technical_score %></strong></div>
+      function extractSection(label) {
+        const startIdx = feedbackLines.findIndex(function(l) {
+          return l.trim().startsWith(label);
+        });
+        if (startIdx === -1) return null;
+        var body = [];
+        for (var i = startIdx + 1; i < feedbackLines.length; i++) {
+          var line = feedbackLines[i].trim();
+          if (SECTIONS.some(function(s) { return line.startsWith(s); })) break;
+          body.push(feedbackLines[i]);
+        }
+        return body.join('\n').trim() || null;
+      }
+
+      var nums = ['01', '02', '03', '04'];
+      var hasAnySections = SECTIONS.some(function(s) { return extractSection(s); });
+    %>
+
+    <% if (hasAnySections) { %>
+      <% SECTIONS.forEach(function(label, i) {
+        var content = extractSection(label);
+        if (!content) return;
+      %>
+      <article class="feedback-section card">
+        <div class="feedback-section-header">
+          <span class="feedback-num"><%= nums[i] %></span>
+          <h3><%= label %></h3>
         </div>
+        <p class="feedback-body"><%= content %></p>
+      </article>
+      <% }); %>
+    <% } else { %>
+      <article class="card">
         <p class="feedback-text"><%= critique.feedback_text %></p>
-        <div class="next-task">
-          <p class="eyebrow">Next task</p>
-          <p><%= critique.next_task %></p>
-        </div>
-      <% } else { %>
-        <p class="muted">No critique is available for this photo yet.</p>
-        <p>This can happen if a previous upload was interrupted. The photo is still saved, and the critique flow can be regenerated later when the AI service is connected.</p>
-      <% } %>
-    </article>
+      </article>
+    <% } %>
   </section>
+
+  <section class="critique-cta card highlight">
+    <div class="critique-cta-inner">
+      <p class="eyebrow">Neste steg</p>
+      <h2><%= critique.next_task %></h2>
+      <a
+        class="button primary critique-cta-btn"
+        href="/photos/upload<%= photo.challenge_id ? '?challenge=' + photo.challenge_id : '' %>"
+      >Last opp neste bilde med denne utfordringen</a>
+    </div>
+  </section>
+
+  <% } else { %>
+  <section class="card">
+    <p class="muted">Ingen tilbakemelding er tilgjengelig for dette bildet ennå.</p>
+    <p>Dette kan skje hvis en tidligere opplasting ble avbrutt. Bildet er fortsatt lagret.</p>
+  </section>
+  <% } %>
+
+  <div class="critique-secondary-links">
+    <a class="button secondary" href="/progress">Se fremgang</a>
+    <a class="button secondary" href="/challenges">Alle utfordringer</a>
+  </div>
+
 </main>
 <%- include('partials/footer') %>
