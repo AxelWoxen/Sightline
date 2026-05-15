@@ -6,9 +6,8 @@ const photoModel = require('../models/photoModel');
 const challengeModel = require('../models/challengeModel');
 const critiqueModel = require('../models/critiqueModel');
 const { extractPhotoSettings } = require('../services/exifService');
-
-
 const { generateAICritique } = require('../services/critiqueService');
+const { MAX_PHOTOS_PER_USER } = require('../config/constants');
 
 const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
 
@@ -153,7 +152,7 @@ exports.handleUpload = async (req, res) => {
 
     const photos = await photoModel.getPhotosByUser(req.session.user.id);
 
-    if (photos.length > 5) {
+    if (photos.length > MAX_PHOTOS_PER_USER) {
       const deletedPhoto = await photoModel.deleteOldestPhotoForUser(
         req.session.user.id
       );

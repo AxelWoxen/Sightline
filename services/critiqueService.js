@@ -1,3 +1,25 @@
+/**
+ * critiqueService
+ *
+ * Generates an AI photography critique for an uploaded image via OpenAI Vision.
+ *
+ * Parameters (generateAICritique):
+ *   user           — user row (name, camera, experience_level, biggest_challenge, ...)
+ *   caption        — string, what the user was trying to capture
+ *   challenge      — challenge row (title, focus_area, ...)
+ *   image_path     — absolute path to the uploaded image file
+ *   photoSettings  — EXIF data object from exifService (may be null)
+ *   manualSettings — { iso, shutter, flash, time_of_day } from upload form (may be null)
+ *
+ * Returns:
+ *   { composition_score, lighting_score, storytelling_score, technical_score,
+ *     feedback_text, feedback_what_works, feedback_technical, feedback_camera,
+ *     feedback_next_time, next_task }
+ *
+ * Swap OpenAI for Claude API: replace openai.chat.completions.create with
+ * anthropic.messages.create and adjust response extraction accordingly.
+ */
+
 const fs = require('fs');
 const path = require('path');
 const OpenAI = require('openai');

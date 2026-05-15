@@ -7,29 +7,32 @@ function average(values) {
 }
 
 exports.showProgress = async (req, res) => {
-  const photos = await photoModel.getPhotosByUser(req.session.user.id);
-  const scored = photos.filter((p) => p.composition_score !== null);
-  const stats = {
-    photosCount: photos.length,
-    averageComposition: average(scored.map((p) => p.composition_score)),
-    averageLighting: average(scored.map((p) => p.lighting_score)),
-    averageStorytelling: average(scored.map((p) => p.storytelling_score)),
-    averageTechnical: average(scored.map((p) => p.technical_score)),
-  };
-  
-  const focusScores = [
-    { name: 'Composition', value: stats.averageComposition },
-    { name: 'Lighting', value: stats.averageLighting },
-    { name: 'Storytelling', value: stats.averageStorytelling },
-    { name: 'Technical', value: stats.averageTechnical },
-  ];
-  
-  const focusArea = focusScores.sort((a, b) => a.value - b.value)[0];
+  try {
+    const photos = await photoModel.getPhotosByUser(req.session.user.id);
+    const scored = photos.filter((p) => p.composition_score !== null);
+    const stats = {
+      photosCount: photos.length,
+      averageComposition: average(scored.map((p) => p.composition_score)),
+      averageLighting: average(scored.map((p) => p.lighting_score)),
+      averageStorytelling: average(scored.map((p) => p.storytelling_score)),
+      averageTechnical: average(scored.map((p) => p.technical_score)),
+    };
 
-  res.render('progress', {
-    title: 'Progress',
-    photos,
-    stats,
-    focusArea
-  });
+    const focusScores = [
+      { name: 'Komposisjon', value: stats.averageComposition },
+      { name: 'Lys',         value: stats.averageLighting },
+      { name: 'Motiv',       value: stats.averageStorytelling },
+      { name: 'Timing',      value: stats.averageTechnical },
+    ];
+
+    const focusArea = focusScores.sort((a, b) => a.value - b.value)[0];
+
+    res.render('progress', { title: 'Fremgang', photos, stats, focusArea });
+  } catch (error) {
+    console.error('Progress error:', error);
+    res.status(500).render('error', {
+      title: 'Feil',
+      message: 'Kunne ikke laste fremgang.',
+    });
+  }
 };

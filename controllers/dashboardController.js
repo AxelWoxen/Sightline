@@ -3,7 +3,8 @@ const photoModel = require('../models/photoModel');
 const generatedChallengeModel = require('../models/generatedChallengeModel');
 const { generateChallengesForUser } = require('../services/challengeGeneratorService');
 
-const REGEN_HOURS = 24;
+const { CHALLENGE_REGEN_HOURS } = require('../config/constants');
+const REGEN_HOURS = CHALLENGE_REGEN_HOURS;
 
 function getWeakAreas(photos) {
   const scored = photos.filter(p => p.composition_score !== null).slice(0, 5);
