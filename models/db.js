@@ -82,6 +82,23 @@ async function init() {
     FOREIGN KEY(photo_id) REFERENCES photos(id)
   )`);
 
+  await run(`CREATE TABLE IF NOT EXISTS generated_challenges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    focus_area TEXT,
+    difficulty TEXT,
+    why_this_challenge TEXT,
+    generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  )`);
+
+  await run(`CREATE TABLE IF NOT EXISTS app_config (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  )`);
+
   // Schema migrations — silent if column already exists
   async function addCol(table, col, def) {
     try { await run(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`); } catch (e) {
