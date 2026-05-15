@@ -1,5 +1,5 @@
 -- Reference schema for Sightline MVP.
--- The running app currently creates tables from models/db.js.
+-- The running app creates/migrates tables from models/db.js on startup.
 
 CREATE TABLE users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -9,6 +9,10 @@ CREATE TABLE users (
   preferred_style TEXT,
   goal TEXT,
   camera TEXT,
+  biggest_challenge TEXT,
+  total_critiques INTEGER DEFAULT 0,
+  last_active DATETIME,
+  onboarding_version INTEGER DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -29,6 +33,10 @@ CREATE TABLE photos (
   image_path TEXT NOT NULL,
   original_name TEXT,
   caption TEXT,
+  manual_iso TEXT,
+  manual_shutter TEXT,
+  manual_flash TEXT,
+  time_of_day TEXT,
   uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(user_id) REFERENCES users(id),
   FOREIGN KEY(challenge_id) REFERENCES challenges(id)
@@ -47,6 +55,25 @@ CREATE TABLE critiques (
   feedback_camera TEXT,
   feedback_next_time TEXT,
   next_task TEXT,
+  model_used TEXT,
+  prompt_version INTEGER DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(photo_id) REFERENCES photos(id)
+);
+
+CREATE TABLE generated_challenges (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  focus_area TEXT,
+  difficulty TEXT,
+  why_this_challenge TEXT,
+  generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+CREATE TABLE app_config (
+  key TEXT PRIMARY KEY,
+  value TEXT
 );

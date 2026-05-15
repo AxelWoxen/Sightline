@@ -105,7 +105,23 @@ async function init() {
       if (!e.message.includes('duplicate column')) throw e;
     }
   }
-  await addCol('users', 'biggest_challenge', 'TEXT');
+  // users
+  await addCol('users', 'biggest_challenge',    'TEXT');
+  await addCol('users', 'total_critiques',       'INTEGER DEFAULT 0');
+  await addCol('users', 'last_active',           'DATETIME');
+  await addCol('users', 'onboarding_version',    'INTEGER DEFAULT 1');
+  // photos
+  await addCol('photos', 'manual_iso',     'TEXT');
+  await addCol('photos', 'manual_shutter', 'TEXT');
+  await addCol('photos', 'manual_flash',   'TEXT');
+  await addCol('photos', 'time_of_day',    'TEXT');
+  // critiques — feedback columns may already exist
+  await addCol('critiques', 'feedback_what_works', 'TEXT');
+  await addCol('critiques', 'feedback_technical',  'TEXT');
+  await addCol('critiques', 'feedback_camera',     'TEXT');
+  await addCol('critiques', 'feedback_next_time',  'TEXT');
+  await addCol('critiques', 'model_used',          'TEXT');
+  await addCol('critiques', 'prompt_version',      'INTEGER DEFAULT 1');
 
   // Migrate: reseed if fewer than 12 challenges (removes portrait, adds proper Landskap/Street)
   const existing = await get('SELECT COUNT(*) AS count FROM challenges');
