@@ -81,6 +81,10 @@ ABSOLUTE RULES:
 - Scores: 70 = a solid beginner photo. Not everything needs to be a problem.
 - Write in Norwegian.
 - No markdown. No emojis. No bullet points.
+- If the user's biggest_challenge matches a visible problem in this photo, address it directly by name. Example: if they said "Bildene blir mørke eller uklare" and the photo is underexposed, open with "Du nevnte at bilder ofte blir mørke — her ser vi akkurat det skje, og her er hvorfor:"
+
+User's self-reported biggest challenge: ${user?.biggest_challenge || 'not specified'}
+Use this to calibrate your feedback — if they mentioned a specific problem and it's visible here, prioritise explaining it over other issues.
 
 Camera: ${cameraInfo}
 ${cameraAdvice}
