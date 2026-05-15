@@ -100,6 +100,25 @@
     </div>
   </section>
 
+  <% if (typeof suggestedChallenge !== 'undefined' && suggestedChallenge) { %>
+  <section class="suggested-challenge card">
+    <p class="eyebrow">Din neste utfordring</p>
+    <h2><%= suggestedChallenge.title %></h2>
+    <p><%= suggestedChallenge.description %></p>
+    <% if (suggestedChallenge.why_this_challenge) { %>
+      <p class="why-this"><%= suggestedChallenge.why_this_challenge %></p>
+    <% } %>
+    <div class="tag-row">
+      <span class="tag"><%= suggestedChallenge.focus_area %></span>
+      <% if (suggestedChallenge.difficulty) { %><span class="tag"><%= suggestedChallenge.difficulty %></span><% } %>
+    </div>
+    <a
+      class="button primary"
+      href="/photos/upload<%= suggestedChallenge.linked_challenge_id ? '?challenge=' + suggestedChallenge.linked_challenge_id : '' %>"
+    >Ta denne utfordringen</a>
+  </section>
+  <% } %>
+
   <% } else { %>
   <section class="card">
     <p class="muted">Ingen tilbakemelding er tilgjengelig for dette bildet ennå.</p>
@@ -109,7 +128,7 @@
 
   <div class="critique-secondary-links">
     <a class="button secondary" href="/progress">Se fremgang</a>
-    <a class="button secondary" href="/challenges">Alle utfordringer</a>
+    <a class="button secondary" href="/dashboard">Dashboard</a>
   </div>
 
 </main>

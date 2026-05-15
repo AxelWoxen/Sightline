@@ -257,6 +257,9 @@ textarea { resize: vertical; }
 .critique-cta-inner { display: flex; flex-direction: column; gap: 14px; }
 .critique-cta-inner h2 { margin: 0; font-size: 1.35rem; }
 .critique-cta-btn { align-self: flex-start; font-size: 1rem; padding: 14px 28px; }
+.suggested-challenge { margin-bottom: 22px; border-color: rgba(215,185,143,0.35); }
+.suggested-challenge h2 { font-size: 1.3rem; }
+.why-this { color: var(--accent); font-style: italic; font-size: 0.92rem; margin: 4px 0 12px; }
 .critique-secondary-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
 .critique-secondary-links .button { margin-top: 0; }
 
