@@ -82,6 +82,14 @@ async function init() {
     FOREIGN KEY(photo_id) REFERENCES photos(id)
   )`);
 
+  // Schema migrations — silent if column already exists
+  async function addCol(table, col, def) {
+    try { await run(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`); } catch (e) {
+      if (!e.message.includes('duplicate column')) throw e;
+    }
+  }
+  await addCol('users', 'biggest_challenge', 'TEXT');
+
   // Migrate: reseed if fewer than 12 challenges (removes portrait, adds proper Landskap/Street)
   const existing = await get('SELECT COUNT(*) AS count FROM challenges');
   if (existing.count < 12) {

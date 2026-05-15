@@ -1,10 +1,10 @@
 const { run, get } = require('./db');
 
-async function createUser({ name, email, experience_level, preferred_style, goal, camera }) {
+async function createUser({ name, email, experience_level, preferred_style, goal, camera, biggest_challenge }) {
   const result = await run(
-    `INSERT INTO users (name, email, experience_level, preferred_style, goal, camera)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [name, email, experience_level, preferred_style, goal, camera]
+    `INSERT INTO users (name, email, experience_level, preferred_style, goal, camera, biggest_challenge)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [name, email || null, experience_level, preferred_style, goal || null, camera || null, biggest_challenge || null]
   );
   return get('SELECT * FROM users WHERE id = ?', [result.id]);
 }

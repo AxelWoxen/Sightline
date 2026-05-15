@@ -11,81 +11,71 @@
 
   <form id="ob-form" action="/onboarding" method="POST">
 
-    <!-- Steg 1: Identitet -->
+    <!-- Steg 1: Hvem er du -->
     <section class="card ob-step" id="ob-step-1">
       <p class="eyebrow">Steg 1 av 3</p>
       <h1>Hvem er du?</h1>
-      <p class="muted">Sightline bruker dette for å gjøre feedback mer personlig.</p>
+      <p class="muted">Sightline bruker dette for å gi deg personlig tilbakemelding.</p>
 
       <div class="form">
         <label>Navn
           <input name="name" placeholder="Axel" required />
         </label>
 
-        <label>Email
-          <input type="email" name="email" placeholder="du@eksempel.com" />
-        </label>
-
-        <label>Erfaring
-          <div class="ob-choice-group">
-            <label class="ob-choice">
-              <input type="radio" name="experience_level" value="Beginner" />
-              <span>
-                <strong>Nybegynner</strong>
-                <small>Har nettopp startet, eller tar frem kameraet av og til</small>
-              </span>
-            </label>
-            <label class="ob-choice">
-              <input type="radio" name="experience_level" value="Intermediate" />
-              <span>
-                <strong>Litt erfaring</strong>
-                <small>Har holdt på en stund, kjenner til noen innstillinger</small>
-              </span>
-            </label>
-            <label class="ob-choice">
-              <input type="radio" name="experience_level" value="Advanced" />
-              <span>
-                <strong>Har holdt på en stund</strong>
-                <small>Komfortabel med manuell modus og redigering</small>
-              </span>
-            </label>
-          </div>
-        </label>
-
         <label>Kamera eller telefon
-          <input name="camera" placeholder="iPhone, Fujifilm, Sony, Canon..." />
+          <input name="camera" placeholder="iPhone 15, Canon EOS R50, Sony A6400..." />
         </label>
+
+        <label>Erfaring</label>
+        <div class="ob-choice-group">
+          <label class="ob-choice">
+            <input type="radio" name="experience_level" value="Helt ny" />
+            <span>
+              <strong>Helt ny</strong>
+              <small>Har nettopp startet, eller tar frem kameraet av og til</small>
+            </span>
+          </label>
+          <label class="ob-choice">
+            <input type="radio" name="experience_level" value="Har prøvd litt" />
+            <span>
+              <strong>Har prøvd litt</strong>
+              <small>Har tatt noen bilder, kjenner til noen innstillinger</small>
+            </span>
+          </label>
+          <label class="ob-choice">
+            <input type="radio" name="experience_level" value="Kan litt men vil bli bedre" />
+            <span>
+              <strong>Kan litt men vil bli bedre</strong>
+              <small>Komfortabel med kameraet, men bildene er sjelden slik jeg vil ha dem</small>
+            </span>
+          </label>
+        </div>
 
         <button type="button" class="button primary" id="ob-next-1">Neste →</button>
       </div>
     </section>
 
-    <!-- Steg 2: Stil -->
+    <!-- Steg 2: Hva vil du fotografere -->
     <section class="card ob-step ob-hidden" id="ob-step-2">
       <p class="eyebrow">Steg 2 av 3</p>
-      <h1>Hva fotograferer du?</h1>
-      <p class="muted">Velg den stilen som passer best til det du vil lære.</p>
+      <h1>Hva vil du fotografere?</h1>
+      <p class="muted">Velg den stilen som passer best. Du kan alltid prøve den andre også.</p>
 
       <div class="ob-style-group">
         <label class="ob-style-card">
-          <input type="radio" name="preferred_style" value="Street photography" />
+          <input type="radio" name="preferred_style" value="Landskap" />
           <div class="ob-style-inner">
-            <strong>Street</strong>
-            <small>Mennesker, byer, øyeblikk i hverdagen</small>
-          </div>
-        </label>
-        <label class="ob-style-card">
-          <input type="radio" name="preferred_style" value="Landscape photography" />
-          <div class="ob-style-inner">
+            <div class="ob-style-icon">🏔</div>
             <strong>Landskap</strong>
-            <small>Natur, lys, vide perspektiver</small>
+            <small>Parker, hav, himmel, natur. Bilder der lyset og stemningen er hovedrollen.</small>
           </div>
         </label>
         <label class="ob-style-card">
-          <input type="radio" name="preferred_style" value="Portrait photography" />
+          <input type="radio" name="preferred_style" value="Street" />
           <div class="ob-style-inner">
-            <strong>Portrett</strong>
-            <small>Ansikter, uttrykk, nær kontakt med motiv</small>
+            <div class="ob-style-icon">🏙</div>
+            <strong>Street</strong>
+            <small>Byliv, folk, arkitektur. Bilder som fanger et øyeblikk i verden rundt deg.</small>
           </div>
         </label>
       </div>
@@ -96,24 +86,46 @@
       </div>
     </section>
 
-    <!-- Steg 3: Mål -->
+    <!-- Steg 3: Hva er vanskeligst -->
     <section class="card ob-step ob-hidden" id="ob-step-3">
       <p class="eyebrow">Steg 3 av 3</p>
-      <h1>Hva vil du bli bedre til?</h1>
+      <h1>Hva synes du er vanskeligst?</h1>
+      <p class="muted">Sightline gir deg én konkret forbedring per bilde, alltid tilpasset dette.</p>
 
-      <div class="form">
-        <label>
-          <textarea name="goal" rows="4" placeholder="Jeg vil ta bedre bilder av..."></textarea>
+      <div class="ob-choice-group">
+        <label class="ob-choice">
+          <input type="radio" name="biggest_challenge" value="Bildene blir mørke eller uklare" />
+          <span>
+            <strong>Bildene blir mørke eller uklare</strong>
+            <small>Eksponeringen er av, eller bildet er ikke skarpt</small>
+          </span>
         </label>
+        <label class="ob-choice">
+          <input type="radio" name="biggest_challenge" value="Jeg vet ikke hva jeg skal fotografere" />
+          <span>
+            <strong>Jeg vet ikke hva jeg skal fotografere</strong>
+            <small>Mangler ideer eller ser ikke motivene</small>
+          </span>
+        </label>
+        <label class="ob-choice">
+          <input type="radio" name="biggest_challenge" value="Bildene ser kjedelige ut" />
+          <span>
+            <strong>Bildene ser kjedelige ut</strong>
+            <small>Teknisk OK, men mangler liv eller stemning</small>
+          </span>
+        </label>
+        <label class="ob-choice">
+          <input type="radio" name="biggest_challenge" value="Vet ikke ennå" />
+          <span>
+            <strong>Vet ikke ennå</strong>
+            <small>Bare nysgjerrig og vil prøve</small>
+          </span>
+        </label>
+      </div>
 
-        <p class="muted" style="font-size:0.9rem;margin:0">
-          Sightline gir deg én konkret forbedring per bilde. Ikke en liste med alt som er feil.
-        </p>
-
-        <div class="ob-nav-row">
-          <button type="button" class="button secondary" id="ob-back-3">← Tilbake</button>
-          <button type="submit" class="button primary">Lag profil</button>
-        </div>
+      <div class="ob-nav-row" style="margin-top:20px">
+        <button type="button" class="button secondary" id="ob-back-3">← Tilbake</button>
+        <button type="submit" class="button primary">Lag profil</button>
       </div>
     </section>
 
@@ -130,13 +142,14 @@
     document.querySelectorAll('.ob-dot').forEach(function (d) {
       d.classList.toggle('active', Number(d.dataset.step) <= n);
     });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   document.getElementById('ob-next-1').addEventListener('click', function () {
     var name = document.querySelector('[name="name"]').value.trim();
-    var exp  = document.querySelector('[name="experience_level"]:checked');
+    var exp = document.querySelector('[name="experience_level"]:checked');
     if (!name) { alert('Skriv inn navnet ditt.'); return; }
-    if (!exp)  { alert('Velg erfaringsnivå.'); return; }
+    if (!exp) { alert('Velg erfaringsnivå.'); return; }
     showStep(2);
   });
 
