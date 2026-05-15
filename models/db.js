@@ -82,22 +82,32 @@ async function init() {
     FOREIGN KEY(photo_id) REFERENCES photos(id)
   )`);
 
+  // Migrate: reseed if fewer than 12 challenges (removes portrait, adds proper Landskap/Street)
   const existing = await get('SELECT COUNT(*) AS count FROM challenges');
-  if (existing.count === 0) {
+  if (existing.count < 12) {
+    await run('DELETE FROM challenges');
     const seed = [
-      ['Foreground depth', 'Include something in the foreground to create depth in a landscape photo.', 'Landscape photography', 'Easy', 'Composition'],
-      ['Golden hour layers', 'Take a landscape photo during soft light and try to separate foreground, middle ground and background.', 'Landscape photography', 'Medium', 'Lighting'],
-      ['Natural leading lines', 'Use a road, river, path or mountain ridge to guide the viewer through the image.', 'Landscape photography', 'Easy', 'Composition'],
-    
-      ['Urban symmetry', 'Find symmetry in buildings, streets or reflections and use it as the main structure of the photo.', 'Street photography', 'Easy', 'Composition'],
-      ['Shadow story', 'Find a strong shadow in the city and make it part of the story.', 'Street photography', 'Easy', 'Storytelling'],
-      ['One clear subject', 'Capture one clear subject in a busy street scene. Remove distractions by changing your angle.', 'Street photography', 'Medium', 'Technical'],
-    
-      ['Window light', 'Take a portrait using soft natural light from a window.', 'Portrait photography', 'Easy', 'Lighting'],
-      ['Subject separation', 'Create separation between the person and the background using light, distance or contrast.', 'Portrait photography', 'Medium', 'Composition'],
-      ['Expression over pose', 'Take a portrait where the expression feels natural, not overly posed.', 'Portrait photography', 'Easy', 'Storytelling']
+      // Landskap — Nybegynner
+      ['Finn lyset', 'Gå ut og ta ett bilde der lyset er hovedelementet — soloppgang, solnedgang, eller skyer som slipper gjennom.', 'Landskap', 'Nybegynner', 'Lys'],
+      ['Noe i forgrunnen', 'Plasser noe interessant i forgrunnen for å skape dybde. En stein, en blomst, et gjerde — noe som trekker blikket inn.', 'Landskap', 'Nybegynner', 'Komposisjon'],
+      // Landskap — Litt øvelse
+      ['Ledende linjer', 'Bruk en vei, elv, sti eller fjellkam til å lede blikket gjennom bildet fra bunn til topp.', 'Landskap', 'Litt øvelse', 'Komposisjon'],
+      ['Vent på riktig øyeblikk', 'Finn et sted og vent — ta bildet i det øyeblikket lyset forandrer seg, ikke før og ikke etter.', 'Landskap', 'Litt øvelse', 'Timing'],
+      // Landskap — Klar for mer
+      ['Tre lag i ett bilde', 'Ta et landskap der du tydelig kan skille forgrunn, mellomgrunn og bakgrunn. Tenk som en scenograf.', 'Landskap', 'Klar for mer', 'Komposisjon'],
+      ['Stemning over motiv', 'Ta et bilde der stemningen er det viktigste — ikke stedet. Hva føles det ut som å stå akkurat der?', 'Landskap', 'Klar for mer', 'Motiv'],
+
+      // Street — Nybegynner
+      ['Ett tydelig motiv', 'Finn én ting i bybildet og gjør den til absolutt midtpunkt. Fjern distraksjoner ved å endre vinkel eller komme nærmere.', 'Street', 'Nybegynner', 'Motiv'],
+      ['Skygger som form', 'Finn en sterk skygge i gaten og gjør den til en del av bildet — ikke bare bakgrunn, men selve motivet.', 'Street', 'Nybegynner', 'Lys'],
+      // Street — Litt øvelse
+      ['Vent på øyeblikket', 'Finn ett sted og vent. Ta bildet i det eksakte øyeblikket noe skjer — ikke sekundet før eller etter.', 'Street', 'Litt øvelse', 'Timing'],
+      ['Byens geometri', 'Finn symmetri, mønstre eller geometri i bygninger, gater eller refleksjoner og gjør det til hovedstrukturen.', 'Street', 'Litt øvelse', 'Komposisjon'],
+      // Street — Klar for mer
+      ['Kontrast mellom to verdener', 'Ta et bilde der to ting som er helt forskjellige møtes i ett bilde — gammelt og nytt, stille og kaos, lys og mørke.', 'Street', 'Klar for mer', 'Motiv'],
+      ['Hardt lys i byen', 'Bruk det harde middagslyset til å skape dramatiske skygger og skarpe kontraster i bybildet.', 'Street', 'Klar for mer', 'Lys'],
     ];
-    
+
     for (const c of seed) {
       await run(
         'INSERT INTO challenges (title, description, category, difficulty, focus_area) VALUES (?, ?, ?, ?, ?)',
