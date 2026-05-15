@@ -1,10 +1,10 @@
 const { run, get, all } = require('./db');
 
-async function createPhoto({ user_id, challenge_id, image_path, original_name, caption }) {
+async function createPhoto({ user_id, challenge_id, image_path, original_name, caption, manual_iso, manual_shutter, manual_flash, time_of_day }) {
   const result = await run(
-    `INSERT INTO photos (user_id, challenge_id, image_path, original_name, caption)
-     VALUES (?, ?, ?, ?, ?)`,
-    [user_id, challenge_id || null, image_path, original_name, caption || null]
+    `INSERT INTO photos (user_id, challenge_id, image_path, original_name, caption, manual_iso, manual_shutter, manual_flash, time_of_day)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [user_id, challenge_id || null, image_path, original_name, caption || null, manual_iso || null, manual_shutter || null, manual_flash || null, time_of_day || null]
   );
 
   return get('SELECT * FROM photos WHERE id = ?', [result.id]);

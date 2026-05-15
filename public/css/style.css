@@ -178,6 +178,17 @@ textarea { resize: vertical; }
   .section-title-row { align-items: start; flex-direction: column; }
 }
 
+/* ── Manual settings collapsible ── */
+.manual-toggle { margin-top: 0; font-size: 0.9rem; font-weight: 700; }
+.manual-settings { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+.manual-settings.open { max-height: 700px; }
+.manual-settings-inner { border-top: 1px solid var(--border); padding-top: 18px; margin-top: 4px; }
+.btn-choice-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-choice { cursor: pointer; }
+.btn-choice input[type="radio"] { display: none; }
+.btn-choice span { display: inline-flex; align-items: center; padding: 9px 18px; border: 1px solid var(--border); border-radius: 999px; font-size: 0.88rem; font-weight: 700; background: rgba(255,255,255,0.05); transition: border-color 0.15s, background 0.15s; color: var(--text); }
+.btn-choice:has(input:checked) span { border-color: var(--accent); background: rgba(215,185,143,0.12); color: var(--accent); }
+
 /* ── Loading spinner ── */
 .button.loading { opacity: 0.75; cursor: not-allowed; gap: 10px; }
 .spinner {

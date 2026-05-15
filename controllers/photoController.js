@@ -114,12 +114,23 @@ exports.handleUpload = async (req, res) => {
       });
     }
 
+    const manualSettings = {
+      iso: req.body.manual_iso || null,
+      shutter: req.body.manual_shutter || null,
+      flash: req.body.manual_flash || null,
+      time_of_day: req.body.time_of_day || null,
+    };
+
     createdPhoto = await photoModel.createPhoto({
       user_id: req.session.user.id,
       challenge_id: selectedChallenge.id,
       image_path: `/uploads/${req.file.filename}`,
       original_name: req.file.originalname,
       caption: req.body.caption || null,
+      manual_iso: manualSettings.iso,
+      manual_shutter: manualSettings.shutter,
+      manual_flash: manualSettings.flash,
+      time_of_day: manualSettings.time_of_day,
     });
 
     const imageFilePath = path.join(uploadsDir, req.file.filename);
@@ -131,7 +142,8 @@ exports.handleUpload = async (req, res) => {
       caption: req.body.caption || '',
       challenge: selectedChallenge,
       image_path: imageFilePath,
-      photoSettings
+      photoSettings,
+      manualSettings,
     });
 
     await critiqueModel.createCritique({

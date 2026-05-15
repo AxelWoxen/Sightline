@@ -7,13 +7,11 @@
     <p class="muted">Velg en utfordring, last opp ett bilde, og få AI-feedback innen 15 sekunder.</p>
 
     <% if (error) { %>
-      <div class="error-message">
-        <%= error %>
-      </div>
+      <div class="error-message"><%= error %></div>
     <% } %>
 
     <% if (!challenges || challenges.length === 0) { %>
-      <p class="muted">Ingen utfordringer er tilgjengelig ennå. Legg til utfordringer i databasen.</p>
+      <p class="muted">Ingen utfordringer er tilgjengelig ennå.</p>
       <a class="button secondary" href="/dashboard">Tilbake til dashboard</a>
     <% } else { %>
       <form class="form" id="upload-form" action="/photos/upload" method="POST" enctype="multipart/form-data">
@@ -24,7 +22,7 @@
                 value="<%= challenge.id %>"
                 <%= String(challenge.id) === String(selectedChallengeId) ? 'selected' : '' %>
               >
-                <%= challenge.title %> <% if (challenge.focus_area) { %>— <%= challenge.focus_area %><% } %>
+                <%= challenge.title %><% if (challenge.focus_area) { %> — <%= challenge.focus_area %><% } %>
               </option>
             <% }) %>
           </select>
@@ -35,12 +33,83 @@
         </label>
 
         <label>Hva prøvde du å fange?
-          <textarea name="caption" rows="4" placeholder="Stemning, lys, motiv, historie..."></textarea>
+          <textarea name="caption" rows="3" placeholder="Stemning, lys, motiv, historie..."></textarea>
         </label>
+
+        <button type="button" class="button secondary manual-toggle" id="manual-toggle">
+          + Legg til kamerainnstillinger (valgfritt)
+        </button>
+
+        <div class="manual-settings" id="manual-settings">
+          <div class="manual-settings-inner form">
+            <p class="muted" style="margin:0;font-size:0.88rem">
+              Hjelper AI-en å forstå hva som skjedde teknisk — ingen felt er obligatoriske.
+            </p>
+
+            <label>ISO — hvor sensitiv var kameraet for lys?
+              <select name="manual_iso">
+                <option value="">Vet ikke</option>
+                <option value="100">100 (lavt — klart lys)</option>
+                <option value="200">200</option>
+                <option value="400">400</option>
+                <option value="800">800</option>
+                <option value="1600">1600 (høyt — dårlig lys)</option>
+                <option value="3200+">3200+ (veldig høyt)</option>
+              </select>
+            </label>
+
+            <label>Lukker — hvor lenge var linsen åpen?
+              <select name="manual_shutter">
+                <option value="">Vet ikke</option>
+                <option value="1/30s eller tregere">1/30s eller tregere (bevegelsesuskarphet mulig)</option>
+                <option value="1/60s">1/60s</option>
+                <option value="1/125s">1/125s</option>
+                <option value="1/250s">1/250s</option>
+                <option value="1/500s">1/500s</option>
+                <option value="1/1000s eller raskere">1/1000s eller raskere (fryser bevegelse)</option>
+              </select>
+            </label>
+
+            <div>
+              <p class="muted" style="margin:0 0 8px;font-size:0.88rem;font-weight:600">Blits</p>
+              <div class="btn-choice-group">
+                <label class="btn-choice"><input type="radio" name="manual_flash" value="Av" /><span>Av</span></label>
+                <label class="btn-choice"><input type="radio" name="manual_flash" value="På" /><span>På</span></label>
+                <label class="btn-choice"><input type="radio" name="manual_flash" value="Vet ikke" /><span>Vet ikke</span></label>
+              </div>
+            </div>
+
+            <div>
+              <p class="muted" style="margin:0 0 8px;font-size:0.88rem;font-weight:600">Tid på dagen</p>
+              <div class="btn-choice-group">
+                <label class="btn-choice"><input type="radio" name="time_of_day" value="Morgen" /><span>Morgen</span></label>
+                <label class="btn-choice"><input type="radio" name="time_of_day" value="Dag" /><span>Dag</span></label>
+                <label class="btn-choice"><input type="radio" name="time_of_day" value="Kveld" /><span>Kveld</span></label>
+                <label class="btn-choice"><input type="radio" name="time_of_day" value="Natt" /><span>Natt</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <button class="button primary" id="upload-btn" type="submit">Last opp og få tilbakemelding</button>
       </form>
     <% } %>
   </section>
 </main>
+
+<script>
+(function () {
+  var toggle = document.getElementById('manual-toggle');
+  var panel = document.getElementById('manual-settings');
+  if (toggle && panel) {
+    toggle.addEventListener('click', function () {
+      var open = panel.classList.toggle('open');
+      toggle.textContent = open
+        ? '− Skjul kamerainnstillinger'
+        : '+ Legg til kamerainnstillinger (valgfritt)';
+    });
+  }
+})();
+</script>
+
 <%- include('partials/footer') %>

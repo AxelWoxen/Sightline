@@ -29,13 +29,26 @@ function imageToBase64(imagePath) {
   return `data:${mimeType};base64,${base64}`;
 }
 
-function buildPrompt({ user, caption, challenge, photoSettings }) {
+function buildPrompt({ user, caption, challenge, photoSettings, manualSettings }) {
 
   const hasExif = photoSettings && (
     photoSettings.shutter_speed ||
     photoSettings.iso ||
     photoSettings.aperture
   );
+
+  const hasManual = manualSettings && (
+    manualSettings.iso || manualSettings.shutter || manualSettings.flash || manualSettings.time_of_day
+  );
+
+  const manualBlock = hasManual ? `
+Manual settings provided by user:
+- ISO: ${manualSettings.iso || 'not provided'}
+- Shutter: ${manualSettings.shutter || 'not provided'}
+- Flash: ${manualSettings.flash || 'not provided'}
+- Time of day: ${manualSettings.time_of_day || 'not provided'}
+Use these to give more accurate advice about what the user could have done differently.
+` : '';
 
   const cameraInfo = user?.camera || 'Unknown camera';
 
@@ -50,6 +63,8 @@ Based on your knowledge of "${cameraInfo}":
 - If it has manual controls: give ONE concrete setting recommendation with exact values if the photo has a clear technical problem. Example: "skru ISO ned til 400" or "sett lukker til 1/500s". Explain in one plain sentence what that setting does.
 - Never suggest a setting that doesn't exist on this specific camera.
 - Never assume — if you are unsure what the camera can do, default to composition and light advice only.
+- For cameras with manual controls: you MUST give at least one specific setting value 
+  if EXIF data shows a technical problem. Do not be vague.
 `;
 
   return `
@@ -85,7 +100,7 @@ What the user was trying to capture:
 "${caption || 'No caption — infer from the image.'}"
 
 ${hasExif
-  ? `Settings used:
+  ? `EXIF settings (primary source):
 - Shutter: ${photoSettings.shutter_speed || 'Unknown'} — how long light hit the sensor
 - Aperture: ${photoSettings.aperture || 'Unknown'} — how wide the lens opening was
 - ISO: ${photoSettings.iso || 'Unknown'} — sensor sensitivity to light
@@ -94,6 +109,8 @@ ${hasExif
 
 Reference these settings when explaining why the photo looks the way it does. Explain in plain language what each relevant setting actually did to this image.`
   : `No EXIF data. Analyze what you see in the image to explain likely camera behavior.`}
+
+${manualBlock}
 
 Return ONLY valid JSON — no markdown, no backticks:
 {
@@ -151,7 +168,7 @@ function parseFeedbackSections(feedbackText) {
   return sections;
 }
 
-async function generateAICritique({ user, caption, challenge, image_path, photoSettings }) {
+async function generateAICritique({ user, caption, challenge, image_path, photoSettings, manualSettings }) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY is missing in .env');
   }
@@ -168,7 +185,7 @@ async function generateAICritique({ user, caption, challenge, image_path, photoS
       {
         role: 'user',
         content: [
-          { type: 'text', text: buildPrompt({ user, caption, challenge, photoSettings }) },
+          { type: 'text', text: buildPrompt({ user, caption, challenge, photoSettings, manualSettings }) },
           { type: 'image_url', image_url: { url: imageUrl } }
         ]
       }
