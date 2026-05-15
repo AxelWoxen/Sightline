@@ -208,6 +208,12 @@ textarea { resize: vertical; }
 .dash-empty { display: flex; flex-direction: column; gap: 14px; }
 .dash-empty h2 { margin: 0; }
 .dash-empty .button { align-self: flex-start; margin-top: 0; }
+.challenge-card { display: flex; flex-direction: column; gap: 0; }
+.challenge-card .button { margin-top: auto; }
+
+@media (max-width: 840px) {
+  .challenge-card-grid { grid-template-columns: 1fr; }
+}
 
 /* ── Onboarding multi-step ── */
 .ob-hidden { display: none !important; }
