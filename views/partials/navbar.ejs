@@ -3,10 +3,10 @@
   <div class="nav-links">
     <% if (currentUser) { %>
       <a href="/dashboard">Dashboard</a>
-      <a href="/photos/upload">Upload</a>
-      <a href="/challenges">Challenges</a>
-      <a href="/progress">Progress</a>
-      <a href="/reset">Start over</a>
+      <a href="/photos/upload">Last opp</a>
+      <a href="/progress">Fremgang</a>
+      <a href="/reset">Start på nytt</a>
+      <span class="muted nav-user"><%= currentUser.name %><% if (currentUser.camera) { %> · <%= currentUser.camera %><% } %></span>
     <% } else { %>
       <a href="/onboarding">Start</a>
     <% } %>

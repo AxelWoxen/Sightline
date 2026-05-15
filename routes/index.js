@@ -10,4 +10,8 @@ router.get('/reset', (req, res) => {
   });
 });
 
+router.get('/api/status', (req, res) => {
+  res.json({ status: 'ok', version: '1.0.0' });
+});
+
 module.exports = router;
